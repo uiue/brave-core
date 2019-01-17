@@ -404,6 +404,7 @@ class RewardsServiceImpl : public RewardsService,
   void MaybeShowNotificationAddFunds();
   bool ShouldShowNotificationAddFunds() const;
   void ShowNotificationAddFunds(bool sufficient);
+  void MaybeShowFirstLaunchNotification();
 
   // Mojo Proxy methods
   void OnPublisherBannerMojoProxy(const std::string& banner);
