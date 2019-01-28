@@ -7,6 +7,7 @@
 #include "base/task/post_task.h"
 #include "base/test/thread_test_helper.h"
 #include "brave/browser/brave_browser_process_impl.h"
+#include "brave/browser/renderer_host/buildflags/buildflags.h"  // For STP
 #include "brave/common/brave_paths.h"
 #include "brave/common/pref_names.h"
 #include "brave/components/brave_shields/browser/local_data_files_service.h"
@@ -20,9 +21,14 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 
+#if BUILDFLAG(BRAVE_STP_ENABLED)
+#include "brave/common/brave_switches.h"
+#endif
+
 using extensions::ExtensionBrowserTest;
 
 const char kTrackingPage[] = "/tracking.html";
+const char kStoragePage[] = "/storage.html";
 
 const char kTrackingScript[] =
     "const url = '%s';"
@@ -71,6 +77,7 @@ public:
     brave::RegisterPathProvider();
     base::FilePath test_data_dir;
     base::PathService::Get(brave::DIR_TEST_DATA, &test_data_dir);
+    content::SetupCrossSiteRedirector(embedded_test_server());
     embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -158,3 +165,57 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionServiceTest, TrackerReferencedFromUntru
 
   EXPECT_EQ(browser()->profile()->GetPrefs()->GetUint64(kTrackersBlocked), 1ULL);
 }
+#if BUILDFLAG(BRAVE_STP_ENABLED)
+IN_PROC_BROWSER_TEST_F(TrackingProtectionServiceTest, StorageTrackingBlocked) {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (!command_line.HasSwitch(switches::kEnableSmartTrackingProtection)) {
+    return;
+  }
+  ASSERT_TRUE(InstallTrackingProtectionExtension());
+
+  // tracker.com is in the StorageTrackingProtection list
+  GURL url = embedded_test_server()->GetURL("tracker.com",
+    kStoragePage);
+  NavigateParams params(browser(), url, ui::PAGE_TRANSITION_IS_REDIRECT_MASK);
+  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  ui_test_utils::NavigateToURL(&params);
+  content::WebContents* contents = browser()->tab_strip_model()->
+    GetActiveWebContents();
+
+  bool storage_blocked;
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(
+      contents,
+      "window.domAutomationController.send(!IsCookieAvailable() &&"
+      "!IsLocalStorageAvailable() && !IsSessionStorageAvailable() &&"
+      "!IsIndexedDBAvailable() && !IsDBAvailable())",
+      &storage_blocked));
+  EXPECT_TRUE(storage_blocked);
+}
+
+IN_PROC_BROWSER_TEST_F(TrackingProtectionServiceTest, StorageTrackingAllowed) {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (!command_line.HasSwitch(switches::kEnableSmartTrackingProtection)) {
+    return;
+  }
+  ASSERT_TRUE(InstallTrackingProtectionExtension());
+
+  GURL url = embedded_test_server()->GetURL("example.com",
+    kStoragePage);
+  NavigateParams params(browser(), url, ui::PAGE_TRANSITION_IS_REDIRECT_MASK);
+  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  ui_test_utils::NavigateToURL(&params);
+  content::WebContents* contents = browser()->tab_strip_model()->
+    GetActiveWebContents();
+
+  bool storage_available;
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(
+      contents,
+      "window.domAutomationController.send(IsCookieAvailable() &&"
+      "IsLocalStorageAvailable() && IsSessionStorageAvailable() &&"
+       "IsIndexedDBAvailable() && IsDBAvailable())",
+      &storage_available));
+  EXPECT_TRUE(storage_available);
+}
+#endif

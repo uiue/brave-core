@@ -26,12 +26,14 @@
 #include "content/public/common/resource_type.h"
 #include "url/gurl.h"
 
-class CTPParser;
-class TrackingProtectionServiceTest;
-
 #if BUILDFLAG(BRAVE_STP_ENABLED)
+#include "base/containers/flat_set.h"
+
 class HostContentSettingsMap;
 #endif
+
+class CTPParser;
+class TrackingProtectionServiceTest;
 
 namespace brave_shields {
 
@@ -87,7 +89,7 @@ class TrackingProtectionService : public BaseLocalDataFilesObserver {
   std::vector<std::string> GetThirdPartyHosts(const std::string& base_host);
 
 #if BUILDFLAG(BRAVE_STP_ENABLED)
-  std::vector<std::string> first_party_storage_trackers_;
+  base::flat_set<std::string> first_party_storage_trackers_;
   std::map<RenderFrameIdKey, GURL> render_frame_key_to_starting_site_url;
   base::Lock frame_starting_site_map_lock_;
 

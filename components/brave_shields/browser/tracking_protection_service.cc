@@ -32,9 +32,9 @@
 #include "brave/components/brave_shields/common/brave_shield_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 
 #define STORAGE_TRACKERS_FILE "StorageTrackingProtection.dat"
 #endif
@@ -87,8 +87,7 @@ void TrackingProtectionService::SetStartingSiteForRenderFrame(
   GURL starting_site, int render_process_id, int render_frame_id) {
   base::AutoLock lock(frame_starting_site_map_lock_);
   const RenderFrameIdKey key(render_process_id, render_frame_id);
-  std::map<RenderFrameIdKey, GURL>::iterator iter =
-      render_frame_key_to_starting_site_url.find(key);
+  auto iter = render_frame_key_to_starting_site_url.find(key);
   if (iter != render_frame_key_to_starting_site_url.end()) {
     render_frame_key_to_starting_site_url.erase(key);
   }
@@ -101,8 +100,7 @@ GURL TrackingProtectionService::GetStartingSiteForRenderFrame(
   int render_process_id, int render_frame_id) {
   base::AutoLock lock(frame_starting_site_map_lock_);
   const RenderFrameIdKey key(render_process_id, render_frame_id);
-  std::map<RenderFrameIdKey, GURL>::iterator iter =
-      render_frame_key_to_starting_site_url.find(key);
+  auto iter = render_frame_key_to_starting_site_url.find(key);
   if (iter != render_frame_key_to_starting_site_url.end()) {
     return iter->second;
   }
@@ -114,7 +112,7 @@ void TrackingProtectionService::ModifyRenderFrameKey(
   int new_render_process_id, int new_render_frame_id) {
   base::AutoLock lock(frame_starting_site_map_lock_);
   const RenderFrameIdKey old_key(old_render_process_id, old_render_frame_id);
-  std::map<RenderFrameIdKey, GURL>::iterator iter =
+  auto iter =
       render_frame_key_to_starting_site_url.find(old_key);
   if (iter != render_frame_key_to_starting_site_url.end()) {
     const RenderFrameIdKey new_key(new_render_process_id, new_render_frame_id);
@@ -128,11 +126,7 @@ void TrackingProtectionService::DeleteRenderFrameKey(int render_process_id,
   int render_frame_id) {
   base::AutoLock lock(frame_starting_site_map_lock_);
   const RenderFrameIdKey key(render_process_id, render_frame_id);
-  std::map<RenderFrameIdKey, GURL>::iterator iter =
-      render_frame_key_to_starting_site_url.find(key);
-  if (iter != render_frame_key_to_starting_site_url.end()) {
-    render_frame_key_to_starting_site_url.erase(key);
-  }
+  render_frame_key_to_starting_site_url.erase(key);
 }
 
 bool TrackingProtectionService::ShouldStartRequest(const GURL& url,
@@ -187,7 +181,7 @@ bool TrackingProtectionService::ShouldStoreState(HostContentSettingsMap* map,
 
   std::string host = origin_url.host();
 
-  GURL starting_site = GetStartingSiteForRenderFrame(render_process_id,
+  const GURL starting_site = GetStartingSiteForRenderFrame(render_process_id,
     render_frame_id);
 
   // If starting host is the current host, user-interaction has happened
@@ -212,7 +206,7 @@ bool TrackingProtectionService::ShouldStoreState(HostContentSettingsMap* map,
     return true;
   }
 
-  // deny storage if host is not found in the tracker list
+  // deny storage if host is found in the tracker list
   return !(std::find(first_party_storage_trackers_.begin(),
     first_party_storage_trackers_.end(), host)
     != first_party_storage_trackers_.end());
@@ -226,14 +220,16 @@ void TrackingProtectionService::ParseStorageTrackersData() {
 
   std::string trackers(storage_trackers_buffer_.begin(),
     storage_trackers_buffer_.end());
-  first_party_storage_trackers_ = base::SplitString(
+  std::vector<std::string> storage_trackers = base::SplitString(
     base::StringPiece(trackers.data(), trackers.size()), ",",
     base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  if (first_party_storage_trackers_.empty()) {
+  if (storage_trackers.empty()) {
     LOG(ERROR) << "No first party trackers found";
     return;
   }
+  first_party_storage_trackers_ = base::flat_set<std::string>(
+    std::move(storage_trackers));
 }
 #endif
 
