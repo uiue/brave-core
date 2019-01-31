@@ -1,7 +1,7 @@
 // Copyright (c) 2019 The Brave Authors. All rights reserved.
 
 #include "build/build_config.h"  // For OS_MACOSX
-#include "brave/browser/renderer_host/buildflags/buildflags.h"  // For STP
+#include "brave/components/brave_shields/browser/buildflags/buildflags.h"  // For STP
 #include "chrome/browser/search/search.h"
 #include "content/public/browser/browser_url_handler.h"
 

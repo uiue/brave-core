@@ -2,20 +2,6 @@
 var indexedDBAvailable = false;
 var dbAvailable = false;
 
-try {
-  localStorage.setItem("stp", "stp");
-} catch (e) {
-  console.error(e);
-}
-
-try {
-  sessionStorage.setItem("stp", "stp");
-} catch (e) {
-  console.error(e);
-}
-
-document.cookie = "stp=stp";
-
 var indexedDB = window.indexedDB;
 var open = indexedDB.open("stp", 1);
 
@@ -46,6 +32,20 @@ try {
 } catch (e) {
   dbAvailable = false;
 }
+
+try {
+  localStorage.setItem("stp", "stp");
+} catch (e) {
+  console.error(e);
+}
+
+try {
+  sessionStorage.setItem("stp", "stp");
+} catch (e) {
+  console.error(e);
+}
+
+document.cookie = "stp=stp";
 
 function IsCookieAvailable() {
   return document.cookie.length != 0;

@@ -46,8 +46,12 @@ void BraveRenderMessageFilter::OnAllowDatabase(int render_frame_id,
                      top_origin_url);
 
   if (*allowed) {
-    ChromeRenderMessageFilter::OnAllowDatabase(render_frame_id, origin_url,
-      top_origin_url, name, display_name, allowed);
+    ChromeRenderMessageFilter::OnAllowDatabase(render_frame_id,
+                                               origin_url,
+                                               top_origin_url,
+                                               name,
+                                               display_name,
+                                               allowed);
   }
   return;
 }
@@ -65,8 +69,11 @@ void BraveRenderMessageFilter::OnAllowDOMStorage(int render_frame_id,
                      top_origin_url);
 
   if (*allowed) {
-    ChromeRenderMessageFilter::OnAllowDOMStorage(render_frame_id, origin_url,
-      top_origin_url, local, allowed);
+    ChromeRenderMessageFilter::OnAllowDOMStorage(render_frame_id,
+                                                 origin_url,
+                                                 top_origin_url,
+                                                 local,
+                                                 allowed);
   }
   return;
 }
@@ -83,8 +90,10 @@ void BraveRenderMessageFilter::OnAllowIndexedDB(int render_frame_id,
                      top_origin_url);
 
   if (*allowed) {
-    ChromeRenderMessageFilter::OnAllowIndexedDB(render_frame_id, origin_url,
-      top_origin_url, allowed);
+    ChromeRenderMessageFilter::OnAllowIndexedDB(render_frame_id,
+                                                origin_url,
+                                                top_origin_url,
+                                                allowed);
   }
   return;
 }

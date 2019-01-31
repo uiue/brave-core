@@ -21,8 +21,8 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "brave/components/brave_shields/browser/base_local_data_files_observer.h"
-#include "brave/browser/renderer_host/buildflags/buildflags.h"  // For STP
 #include "brave/components/brave_shields/browser/base_brave_shields_service.h"
+#include "brave/components/brave_shields/browser/buildflags/buildflags.h"  // For STP
 #include "brave/components/brave_shields/browser/dat_file_util.h"
 #include "content/public/common/resource_type.h"
 #include "url/gurl.h"

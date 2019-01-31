@@ -29,8 +29,9 @@ using brave_shields::TrackingProtectionHelper;
 
 using extensions::ExtensionBrowserTest;
 
-const char kTrackingPage[] = "/tracking.html";
+const char kRedirectPage[] = "/server-redirect?";
 const char kStoragePage[] = "/storage.html";
+const char kTrackingPage[] = "/tracking.html";
 
 const char kTrackingScript[] =
     "const url = '%s';"
@@ -179,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionServiceTest, StorageTrackingBlocked) {
   GURL tracking_url = embedded_test_server()->GetURL("tracker.com",
     kStoragePage);
 
-  GURL url = embedded_test_server()->GetURL(std::string("/server-redirect?") +
+  GURL url = embedded_test_server()->GetURL(std::string(kRedirectPage) +
     tracking_url.spec());
 
   ui_test_utils::NavigateToURL(browser(), url);
@@ -208,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionServiceTest, StorageTrackingAllowed) {
   GURL redirect_url = embedded_test_server()->GetURL("example.com",
     kStoragePage);
 
-  GURL url = embedded_test_server()->GetURL(std::string("/server-redirect?") +
+  GURL url = embedded_test_server()->GetURL(std::string(kRedirectPage) +
     redirect_url.spec());
 
   ui_test_utils::NavigateToURL(browser(), url);

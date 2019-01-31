@@ -10,7 +10,6 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
-#include "brave/browser/renderer_host/buildflags/buildflags.h"  // For STP
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/macros.h"

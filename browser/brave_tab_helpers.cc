@@ -3,9 +3,9 @@
 #include "brave/browser/brave_tab_helpers.h"
 
 #include "brave/browser/brave_drm_tab_helper.h"
-#include "brave/browser/renderer_host/buildflags/buildflags.h"  // For STP
 #include "brave/components/brave_ads/browser/ads_tab_helper.h"
 #include "brave/components/brave_rewards/browser/buildflags/buildflags.h"
+#include "brave/components/brave_shields/browser/buildflags/buildflags.h"  // For STP
 #include "content/public/browser/web_contents.h"
 
 #if !defined(OS_ANDROID)
