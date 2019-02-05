@@ -368,9 +368,9 @@ export class Panel extends React.Component<Props, State> {
     const { currentGrant } = this.props.rewardsPanelData
 
     if (notificationType === 'ads-launch') {
-      delete notification.notification['date']    
+      delete notification.notification['date']
     }
-  
+
     const pendingTotal = parseFloat(
       (pendingContributionTotal || 0).toFixed(1))
 

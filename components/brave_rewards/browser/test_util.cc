@@ -8,6 +8,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "brave/components/brave_rewards/browser/rewards_service.h"
 #include "brave/components/brave_rewards/browser/rewards_service_factory.h"
+#include "brave/components/brave_ads/browser/ads_service.h"
+#include "brave/components/brave_ads/browser/ads_service_factory.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_profile.h"
@@ -33,4 +35,22 @@ std::unique_ptr<Profile> CreateBraveRewardsProfile(const base::FilePath& path) {
   return profile_builder.Build();
 }
 
-}  // namespace
+}  // namespace brave_rewards
+
+namespace brave_ads {
+
+std::unique_ptr<Profile> CreateBraveAdsProfile(const base::FilePath& path) {
+  BitmapFetcherServiceFactory::GetInstance();
+  AdsServiceFactory::GetInstance();
+  sync_preferences::PrefServiceMockFactory factory;
+  auto registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
+  std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs(
+      factory.CreateSyncable(registry.get()));
+  RegisterUserProfilePrefs(registry.get());
+  TestingProfile::Builder profile_builder;
+  profile_builder.SetPrefService(std::move(prefs));
+  profile_builder.SetPath(path);
+  return profile_builder.Build();
+}
+
+} // namespace brave_ads

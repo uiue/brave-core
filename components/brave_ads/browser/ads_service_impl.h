@@ -74,6 +74,7 @@ class AdsServiceImpl : public AdsService,
   void OnMediaStop(SessionID tab_id) override;
   void ClassifyPage(const std::string& url, const std::string& page) override;
   void SetConfirmationsIsReady(const bool is_ready) override;
+  bool IsTestingEnv() override;
 
   void Shutdown() override;
 

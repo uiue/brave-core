@@ -18,4 +18,10 @@ std::unique_ptr<Profile> CreateBraveRewardsProfile(const base::FilePath& path);
 
 }  // namespace brave_rewards
 
+namespace brave_ads {
+
+std::unique_ptr<Profile> CreateBraveAdsProfile(const base::FilePath& path);
+
+}  // namespace brave_ads
+
 #endif  // BRAVE_COMPONENTS_BRAVE_REWARDS_BROWSER_TEST_UTIL_H_
