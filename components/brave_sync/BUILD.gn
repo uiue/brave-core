@@ -85,6 +85,7 @@ source_set("brave_sync") {
   deps = [
     ":core",
     "//base",
+    "//components/browser_sync",
     "//components/bookmarks/browser",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
