@@ -1,3 +1,4 @@
+#include "brave/components/brave_sync/brave_sync_service.h"
 #include "brave/components/brave_sync/client/brave_sync_client.h"
 
 namespace brave_sync {

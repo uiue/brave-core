@@ -6,8 +6,6 @@
 
 #include "brave/common/extensions/api/brave_sync.h"
 #include "brave/components/brave_sync/client/brave_sync_client.h"
-// #include "brave/components/brave_sync/brave_sync_service.h"
-// #include "brave/components/brave_sync/brave_sync_service_factory.h"
 #include "brave/components/brave_sync/client/client_ext_impl_data.h"
 #include "brave/components/brave_sync/values_conv.h"
 #include "brave/components/brave_sync/jslib_messages.h"
@@ -155,7 +153,7 @@ ExtensionFunction::ResponseAction BraveSyncExtensionInitializedFunction::Run() {
   // Also inform sync client extension started
   ProfileSyncService* sync_service = GetProfileSyncService(browser_context());
   DCHECK(sync_service);
-  sync_service->GetSyncClient()->GetBraveSyncClient()->OnExtensionInitialized();
+  sync_service->GetBraveSyncClient()->OnExtensionInitialized();
 
   return RespondNow(NoArguments());
 }

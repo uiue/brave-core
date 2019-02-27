@@ -128,7 +128,7 @@ BraveSyncServiceImpl::BraveSyncServiceImpl(Profile* profile) :
 BraveSyncServiceImpl::~BraveSyncServiceImpl() {
 }
 
-BraveSyncClient* BraveSyncServiceImpl::GetSyncClient() {
+BraveSyncClient* BraveSyncServiceImpl::GetBraveSyncClient() {
   return sync_client_.get();
 }
 
