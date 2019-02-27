@@ -213,6 +213,11 @@ void ProfileSyncService::OnSyncWordsPrepared(const std::string& words) {
 #endif
 }
 
+syncer::SyncClient* ProfileSyncService::GetSyncClient() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return sync_client_.get();
+}
+
 void ProfileSyncService::BraveSyncSetup() {
   brave_sync_prefs_ =
     std::make_unique<brave_sync::prefs::Prefs>(sync_client_->GetPrefService());
