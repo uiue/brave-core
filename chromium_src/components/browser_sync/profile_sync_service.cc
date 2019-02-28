@@ -1,3 +1,9 @@
+#include "components/sync/engine/sync_credentials.h"
+namespace browser_sync {
+namespace {
+syncer::SyncCredentials GetDummyCredentials();
+}
+}
 #include "../../../../components/browser_sync/profile_sync_service.cc"
 
 #include "brave/components/brave_sync/brave_sync_prefs.h"
@@ -29,6 +35,14 @@ std::string GetDeviceName() {
 #endif
     }
   return hostname;
+}
+
+syncer::SyncCredentials GetDummyCredentials() {
+  syncer::SyncCredentials credentials;
+  credentials.account_id = "dummy_account_id";
+  credentials.email = "dummy_email";
+  credentials.sync_token = "dummy_access_token";
+  return credentials;
 }
 
 }
@@ -70,7 +84,6 @@ void ProfileSyncService::OnSetupSyncHaveCode(const std::string& sync_words,
 void ProfileSyncService::OnSetupSyncNewToSync(
     const std::string& device_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  LOG(ERROR) << __func__;
 
   if (brave_sync_initializing_) {
     NotifyLogMessage("currently initializing");
@@ -136,7 +149,6 @@ void ProfileSyncService::GetSettingsAndDevices(
 
 void ProfileSyncService::GetSyncWords() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  LOG(ERROR) << __func__;
   // Ask sync client
   std::string seed = brave_sync_prefs_->GetSeed();
   GetBraveSyncClient()->NeedSyncWords(seed);
@@ -365,7 +377,6 @@ void ProfileSyncService::OnSaveBookmarksBaseOrder(const std::string& order)  {
 }
 
 void ProfileSyncService::OnSyncWordsPrepared(const std::string& words) {
-  LOG(ERROR) << words;
   NotifyHaveSyncWords(words);
 }
 
@@ -411,6 +422,10 @@ void ProfileSyncService::OnBraveSyncPrefsChanged(const std::string& pref) {
       brave_sync_initialized_ = false;
   }
   NotifySyncStateChanged();
+}
+
+bool ProfileSyncService::IsBraveSyncEnabled() const{
+  return brave_sync_prefs_->GetSyncEnabled();
 }
 
 void ProfileSyncService::BraveSyncSetup() {

@@ -1,5 +1,5 @@
 diff --git a/components/browser_sync/profile_sync_service.h b/components/browser_sync/profile_sync_service.h
-index 74818b55931cf9896bf781b598a27d04962714cf..9cb30a7f1a87eccd8e8635e3d9249999303e0db2 100644
+index 74818b55931cf9896bf781b598a27d04962714cf..065eefc2559317d9a6c31deb7a5914ad734839ad 100644
 --- a/components/browser_sync/profile_sync_service.h
 +++ b/components/browser_sync/profile_sync_service.h
 @@ -138,7 +138,9 @@ class ProfileSyncService : public syncer::SyncService,
@@ -13,10 +13,11 @@ index 74818b55931cf9896bf781b598a27d04962714cf..9cb30a7f1a87eccd8e8635e3d9249999
   public:
    // If AUTO_START, sync will set IsFirstSetupComplete() automatically and sync
    // will begin syncing without the user needing to confirm sync settings.
-@@ -368,6 +370,42 @@ class ProfileSyncService : public syncer::SyncService,
+@@ -368,6 +370,43 @@ class ProfileSyncService : public syncer::SyncService,
  
    syncer::SyncClient* GetSyncClientForTest();
  
++  //TODO(darkdh): subclass ProfileSyncService
 +  brave_sync::BraveSyncClient* GetBraveSyncClient() override;
 +  // BraveSyncService messages from UI
 +  void OnSetupSyncHaveCode(const std::string& sync_words,
@@ -56,10 +57,11 @@ index 74818b55931cf9896bf781b598a27d04962714cf..9cb30a7f1a87eccd8e8635e3d9249999
   private:
    // Passed as an argument to StopImpl to control whether or not the sync
    // engine should clear its data directory when it shuts down. See StopImpl
-@@ -377,6 +415,14 @@ class ProfileSyncService : public syncer::SyncService,
+@@ -377,6 +416,15 @@ class ProfileSyncService : public syncer::SyncService,
      CLEAR_DATA,
    };
  
++  bool IsBraveSyncEnabled() const;
 +  void BraveSyncSetup();
 +  void OnBraveSyncPrefsChanged(const std::string& pref);
 +  void NotifySyncSetupError(const std::string& error);
@@ -71,7 +73,7 @@ index 74818b55931cf9896bf781b598a27d04962714cf..9cb30a7f1a87eccd8e8635e3d9249999
    // Shorthand for user_settings_.IsFirstSetupComplete().
    bool IsFirstSetupComplete() const;
  
-@@ -506,6 +552,8 @@ class ProfileSyncService : public syncer::SyncService,
+@@ -506,6 +554,8 @@ class ProfileSyncService : public syncer::SyncService,
    // The class that handles getting, setting, and persisting sync preferences.
    syncer::SyncPrefs sync_prefs_;
  
@@ -80,7 +82,7 @@ index 74818b55931cf9896bf781b598a27d04962714cf..9cb30a7f1a87eccd8e8635e3d9249999
    // Encapsulates user signin - used to set/get the user's authenticated
    // email address and sign-out upon error.
    identity::IdentityManager* const identity_manager_;
-@@ -638,6 +686,21 @@ class ProfileSyncService : public syncer::SyncService,
+@@ -638,6 +688,21 @@ class ProfileSyncService : public syncer::SyncService,
    // sync is stopped after a callback from |user_settings_|).
    bool is_stopping_and_clearing_;
  

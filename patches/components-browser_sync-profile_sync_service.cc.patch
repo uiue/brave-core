@@ -1,5 +1,5 @@
 diff --git a/components/browser_sync/profile_sync_service.cc b/components/browser_sync/profile_sync_service.cc
-index a0355393caba17c8343ec2a771eeb29d731d27e4..c15041d5b09c55727764ca4de8f69968dfd8cb91 100644
+index a0355393caba17c8343ec2a771eeb29d731d27e4..367052bc4c02c2feaa8eccf5ae7ef15f94903db6 100644
 --- a/components/browser_sync/profile_sync_service.cc
 +++ b/components/browser_sync/profile_sync_service.cc
 @@ -198,6 +198,8 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
@@ -11,3 +11,23 @@ index a0355393caba17c8343ec2a771eeb29d731d27e4..c15041d5b09c55727764ca4de8f69968
    // If Sync is disabled via command line flag, then ProfileSyncService
    // shouldn't be instantiated.
    DCHECK(IsSyncAllowedByFlag());
+@@ -394,6 +396,7 @@ void ProfileSyncService::CredentialsChanged() {
+ }
+ 
+ bool ProfileSyncService::IsEngineAllowedToStart() const {
++  if (IsBraveSyncEnabled()) return true;
+   int disable_reasons = GetDisableReasons();
+   if (IsStandaloneTransportEnabled()) {
+     // USER_CHOICE (i.e. the Sync feature toggle) and PLATFORM_OVERRIDE (i.e.
+@@ -539,7 +542,10 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
+                                ->GetLocalDeviceInfoProvider()
+                                ->GetSyncUserAgent();
+   params.http_factory_getter = MakeHttpPostProviderFactoryGetter();
+-  params.credentials = auth_manager_->GetCredentials();
++  if (IsBraveSyncEnabled()) 
++    params.credentials = GetDummyCredentials();
++  else
++    params.credentials = auth_manager_->GetCredentials();
+   DCHECK(!params.credentials.account_id.empty() || IsLocalSyncEnabled());
+   if (!base::FeatureList::IsEnabled(switches::kSyncE2ELatencyMeasurement)) {
+     invalidation::InvalidationService* invalidator =
