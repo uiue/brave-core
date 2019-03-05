@@ -1,7 +1,9 @@
+#include "components/signin/core/browser/account_info.h"
 #include "components/sync/engine/sync_credentials.h"
 namespace browser_sync {
 namespace {
 syncer::SyncCredentials GetDummyCredentials();
+AccountInfo GetDummyAccountInfo();
 }
 }
 #include "../../../../components/browser_sync/profile_sync_service.cc"
@@ -45,6 +47,12 @@ syncer::SyncCredentials GetDummyCredentials() {
   return credentials;
 }
 
+AccountInfo GetDummyAccountInfo() {
+  AccountInfo account_info;
+  account_info.account_id = "dummy_account_id";
+  return account_info;
+}
+
 }
 
 using brave_sync::RecordsList;
@@ -77,7 +85,6 @@ void ProfileSyncService::OnSetupSyncHaveCode(const std::string& sync_words,
   brave_sync_initializing_ = true;
 
   brave_sync_prefs_->SetSyncEnabled(true);
-  user_settings_->SetSyncRequested(true);
   brave_sync_words_ = sync_words;
 }
 
@@ -105,7 +112,6 @@ void ProfileSyncService::OnSetupSyncNewToSync(
   brave_sync_initializing_ = true;
 
   brave_sync_prefs_->SetSyncEnabled(true);
-  user_settings_->SetSyncRequested(true);
 }
 
 void ProfileSyncService::OnDeleteDevice(const std::string& device_id) {
@@ -161,7 +167,6 @@ std::string ProfileSyncService::GetSeed() {
 void ProfileSyncService::OnSetSyncEnabled(const bool sync_this_device) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   brave_sync_prefs_->SetSyncEnabled(true);
-  user_settings_->SetSyncRequested(true);
 }
 
 void ProfileSyncService::OnSetSyncBookmarks(const bool sync_bookmarks) {
@@ -313,6 +318,7 @@ void ProfileSyncService::OnSyncReady() {
   DCHECK(false == brave_sync_initialized_);
   brave_sync_initialized_ = true;
 
+  user_settings_->SetSyncRequested(true);
   // fetch the records
   // RequestSyncData();
 }
@@ -465,6 +471,25 @@ void ProfileSyncService::BraveSyncSetup() {
       !brave_sync_prefs_->GetThisDeviceName().empty()) {
     brave_sync_configured_ = true;
   }
+}
+
+void ProfileSyncService::BraveEngineParamsInit(
+    syncer::SyncEngine::InitParams* params) {
+  DCHECK(params);
+  params->nudge_sync_cycle_delegate_function =
+      base::BindRepeating(&ProfileSyncService::OnNudgeSyncCycle,
+                          sync_enabled_weak_factory_.GetWeakPtr());
+  params->poll_sync_cycle_delegate_function =
+      base::BindRepeating(&ProfileSyncService::OnPollSyncCycle,
+                          sync_enabled_weak_factory_.GetWeakPtr());
+}
+
+void ProfileSyncService::OnNudgeSyncCycle(){
+  LOG(ERROR) << __func__;
+}
+
+void ProfileSyncService::OnPollSyncCycle(){
+  LOG(ERROR) << __func__;
 }
 
 }   // namespace browser_sync

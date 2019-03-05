@@ -1,0 +1,15 @@
+diff --git a/components/sync/engine_impl/sync_engine_event_listener.h b/components/sync/engine_impl/sync_engine_event_listener.h
+index d9f4393469a27f580c87ac7e28d2557cdb8c7e98..81f00080eaf81275c2bf5829aa39749299a3f8a7 100644
+--- a/components/sync/engine_impl/sync_engine_event_listener.h
++++ b/components/sync/engine_impl/sync_engine_event_listener.h
+@@ -42,6 +42,10 @@ class SyncEngineEventListener {
+   // Emits events when sync communicates with the server.
+   virtual void OnProtocolEvent(const ProtocolEvent& event) = 0;
+ 
++  // TODO(darkdh): passing data later
++  virtual void OnNudgeSyncCycle() {}
++  virtual void OnPollSyncCycle() {}
++
+  protected:
+   virtual ~SyncEngineEventListener();
+ };

@@ -1,0 +1,24 @@
+diff --git a/components/sync/driver/glue/sync_backend_host_core.cc b/components/sync/driver/glue/sync_backend_host_core.cc
+index 2bbe1dadae8202bb35eaac9fa069d6ab12b08ce6..d7862a3c86a1d720474720196ae9ffc6cf657c51 100644
+--- a/components/sync/driver/glue/sync_backend_host_core.cc
++++ b/components/sync/driver/glue/sync_backend_host_core.cc
+@@ -413,12 +413,13 @@ void SyncBackendHostCore::DoInitialProcessControlTypes() {
+     return;
+   }
+ 
+-  if (!sync_manager_->InitialSyncEndedTypes().HasAll(ControlTypes())) {
+-    LOG(ERROR) << "Failed to download control types";
+-    host_.Call(FROM_HERE,
+-               &SyncBackendHostImpl::HandleInitializationFailureOnFrontendLoop);
+-    return;
+-  }
++  // TODO(darkdh): move device record into control type
++  // if (!sync_manager_->InitialSyncEndedTypes().HasAll(ControlTypes())) {
++  //   LOG(ERROR) << "Failed to download control types";
++  //   host_.Call(FROM_HERE,
++  //              &SyncBackendHostImpl::HandleInitializationFailureOnFrontendLoop);
++  //   return;
++  // }
+ 
+   DCHECK_EQ(user_share->directory->cache_guid(), sync_manager_->cache_guid());
+   host_.Call(FROM_HERE,

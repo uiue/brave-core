@@ -1,0 +1,13 @@
+diff --git a/components/sync/engine/sync_engine.h b/components/sync/engine/sync_engine.h
+index 826cc5072e20b1760a64e8edca2933e83f797730..63645c50a02c7e1c361dd3588262378afccdcdf7 100644
+--- a/components/sync/engine/sync_engine.h
++++ b/components/sync/engine/sync_engine.h
+@@ -82,6 +82,8 @@ class SyncEngine : public ModelTypeConfigurer {
+     // Define the polling intervals. Must not be zero.
+     base::TimeDelta short_poll_interval;
+     base::TimeDelta long_poll_interval;
++    base::Closure nudge_sync_cycle_delegate_function;
++    base::Closure poll_sync_cycle_delegate_function;
+ 
+    private:
+     DISALLOW_COPY_AND_ASSIGN(InitParams);
