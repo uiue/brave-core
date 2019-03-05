@@ -1,0 +1,22 @@
+diff --git a/components/sync/engine_impl/syncer.cc b/components/sync/engine_impl/syncer.cc
+index d4d745fcd5a2d254dfcbdc44ed370e4479b28698..545395d392a980f1c779adf7390cd11f0855bd4e 100644
+--- a/components/sync/engine_impl/syncer.cc
++++ b/components/sync/engine_impl/syncer.cc
+@@ -167,9 +167,14 @@ SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
+       break;
+     }
+ 
+-    SyncerError error = commit->PostAndProcessResponse(
+-        nudge_tracker, cycle, cycle->mutable_status_controller(),
+-        cycle->context()->extensions_activity());
++    // SyncerError error = commit->PostAndProcessResponse(
++    //     nudge_tracker, cycle, cycle->mutable_status_controller(),
++    //     cycle->context()->extensions_activity());
++    SyncerError error(SyncerError::SYNCER_OK);
++    // TODO(darkdh): do coversion to brave sync record and dispatch to UI thread
++    for (auto& observer : *cycle->context()->listeners())
++      observer.OnNudgeSyncCycle();
++
+     commit->CleanUp();
+     if (error.value() != SyncerError::SYNCER_OK) {
+       return error;

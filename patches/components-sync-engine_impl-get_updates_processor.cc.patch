@@ -1,0 +1,19 @@
+diff --git a/components/sync/engine_impl/get_updates_processor.cc b/components/sync/engine_impl/get_updates_processor.cc
+index df71de3ef237e61b5cda7d96fe3a24a8f8f1bf6f..46a738236300e141de5c37cba7e03943cdf31636 100644
+--- a/components/sync/engine_impl/get_updates_processor.cc
++++ b/components/sync/engine_impl/get_updates_processor.cc
+@@ -220,8 +220,12 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
+ 
+   ModelTypeSet partial_failure_data_types;
+ 
+-  SyncerError result = SyncerProtoUtil::PostClientToServerMessage(
+-      msg, &update_response, cycle, &partial_failure_data_types);
++  // SyncerError result = SyncerProtoUtil::PostClientToServerMessage(
++  //     msg, &update_response, cycle, &partial_failure_data_types);
++  // TODO(darkdh): dispatch request to UI and pass back the result
++  for (auto& observer : *cycle->context()->listeners())
++    observer.OnPollSyncCycle();
++  SyncerError result(SyncerError::SYNCER_OK);
+ 
+   DVLOG(2) << SyncerProtoUtil::ClientToServerResponseDebugString(
+       update_response);

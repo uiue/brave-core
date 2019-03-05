@@ -1,0 +1,16 @@
+diff --git a/components/sync/driver/data_type_manager_impl.cc b/components/sync/driver/data_type_manager_impl.cc
+index ea180493bb90741e1601391bb5b1a0a5e11b9303..e9a4111b5ca839392614f553d16f7af5aa229952 100644
+--- a/components/sync/driver/data_type_manager_impl.cc
++++ b/components/sync/driver/data_type_manager_impl.cc
+@@ -611,7 +611,10 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
+   DCHECK(Intersection(downloaded_types_, types_to_journal).Empty());
+   DCHECK(Intersection(downloaded_types_, crypto_types).Empty());
+   // |downloaded_types_| was already updated to include all enabled types.
+-  DCHECK(downloaded_types_.HasAll(types_to_download));
++  LOG(ERROR) << downloaded_types_;
++  LOG(ERROR) << types_to_download;
++  // TODO(darkdh): fix Control Type download
++  // DCHECK(downloaded_types_.HasAll(types_to_download));
+ 
+   DVLOG(1) << "Types " << ModelTypeSetToString(types_to_download)
+            << " added; calling ConfigureDataTypes";

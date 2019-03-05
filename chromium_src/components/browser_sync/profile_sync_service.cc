@@ -299,6 +299,7 @@ void ProfileSyncService::OnSaveInitData(const Uint8Array& seed,
 
   brave_sync_configured_ = true;
 
+  user_settings_->SetChosenDataTypes(false, syncer::ModelTypeSet());
   OnSetSyncBookmarks(true);
 
   brave_sync_initializing_ = false;
