@@ -62,7 +62,7 @@ export class RewardsPanel extends React.Component<Props, State> {
       if (!tabs || !tabs.length) {
         return
       }
-      const pollTwitchPage = (tab: chrome.tabs.Tab, tabId: number, publisherBlob: string) => {
+      const pollTwitchPage = (tab: chrome.tabs.Tab, tabId: number) => {
         // use an interval here to monitor when the DOM has finished
         // generating. clear after the data is present.
         // Check every second no more than 'limit' times
@@ -80,10 +80,9 @@ export class RewardsPanel extends React.Component<Props, State> {
             code: 'document.body.outerHTML'
           }, function (result: string[]) {
             if (result[0].includes(markupMatch) && !result[0].includes(notYetRetrievedMatch)) {
-              publisherBlob = result[0]
               clearInterval(interval)
               const rewardsPanelActions = require('../background/actions/rewardsPanelActions').default
-              rewardsPanelActions.onTabRetrieved(tab, publisherBlob)
+              rewardsPanelActions.onTabRetrieved(tab, result[0])
             } else {
               chrome.storage.local.get(['rewards_panel_open'], function (result) {
                 if (result['rewards_panel_open'] === 'false') {
@@ -97,7 +96,7 @@ export class RewardsPanel extends React.Component<Props, State> {
                 clearInterval(interval)
 
                 const rewardsPanelActions = require('../background/actions/rewardsPanelActions').default
-                rewardsPanelActions.onTabRetrieved(tab, publisherBlob)
+                rewardsPanelActions.onTabRetrieved(tab, '')
               }
             }
           })
@@ -106,15 +105,14 @@ export class RewardsPanel extends React.Component<Props, State> {
       }
 
       const pollData = (tab: chrome.tabs.Tab, tabId: number, url: URL) => {
-        let publisherBlob = ''
         if (url && url.href.startsWith('https://www.twitch.tv/')) {
           chrome.storage.local.get(['rewards_panel_open'], function (result) {
             if (result['rewards_panel_open'] === 'true') {
-              pollTwitchPage(tab, tabId, publisherBlob)
+              pollTwitchPage(tab, tabId)
             }
           })
         } else {
-          this.props.actions.onTabRetrieved(tab, publisherBlob)
+          this.props.actions.onTabRetrieved(tab, '')
         }
       }
       let tab = tabs[0]
@@ -123,10 +121,10 @@ export class RewardsPanel extends React.Component<Props, State> {
         if (url && url.host.endsWith('.twitch.tv')) {
           pollData(tab, tab.id, url)
         } else {
-          this.props.actions.onTabRetrieved(tab, '')
+          this.props.actions.onTabRetrieved(tab)
         }
       } else {
-        this.props.actions.onTabRetrieved(tab, '')
+        this.props.actions.onTabRetrieved(tab)
       }
     })
   }
