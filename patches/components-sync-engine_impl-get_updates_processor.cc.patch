@@ -1,8 +1,16 @@
 diff --git a/components/sync/engine_impl/get_updates_processor.cc b/components/sync/engine_impl/get_updates_processor.cc
-index df71de3ef237e61b5cda7d96fe3a24a8f8f1bf6f..46a738236300e141de5c37cba7e03943cdf31636 100644
+index df71de3ef237e61b5cda7d96fe3a24a8f8f1bf6f..afc4b6c3014ca9ee5b95141a25b9a53ea3ec8869 100644
 --- a/components/sync/engine_impl/get_updates_processor.cc
 +++ b/components/sync/engine_impl/get_updates_processor.cc
-@@ -220,8 +220,12 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
+@@ -37,6 +37,7 @@ bool ShouldRequestEncryptionKey(SyncCycleContext* context) {
+ SyncerError HandleGetEncryptionKeyResponse(
+     const sync_pb::ClientToServerResponse& update_response,
+     syncable::Directory* dir) {
++  return SyncerError(SyncerError::SYNCER_OK);
+   bool success = false;
+   if (update_response.get_updates().encryption_keys_size() == 0) {
+     LOG(ERROR) << "Failed to receive encryption key from server.";
+@@ -220,8 +221,15 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
  
    ModelTypeSet partial_failure_data_types;
  
@@ -10,6 +18,9 @@ index df71de3ef237e61b5cda7d96fe3a24a8f8f1bf6f..46a738236300e141de5c37cba7e03943
 -      msg, &update_response, cycle, &partial_failure_data_types);
 +  // SyncerError result = SyncerProtoUtil::PostClientToServerMessage(
 +  //     msg, &update_response, cycle, &partial_failure_data_types);
++  sync_pb::GetUpdatesResponse* gu_response = new sync_pb::GetUpdatesResponse();
++  InitFakeUpdateResponse(gu_response, request_types);
++  update_response.set_allocated_get_updates(gu_response);
 +  // TODO(darkdh): dispatch request to UI and pass back the result
 +  for (auto& observer : *cycle->context()->listeners())
 +    observer.OnPollSyncCycle();
