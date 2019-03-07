@@ -2539,6 +2539,10 @@ void RewardsServiceImpl::SetLedgerEnvForTesting() {
   #endif
 }
 
+void RewardsServiceImpl::StartAutoContributeForTest() {
+  bat_ledger_->StartAutoContribute();
+}
+
 void RewardsServiceImpl::GetProduction(const GetProductionCallback& callback) {
   bat_ledger_service_->GetProduction(callback);
 }
