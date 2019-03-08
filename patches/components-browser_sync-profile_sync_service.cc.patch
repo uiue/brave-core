@@ -1,5 +1,5 @@
 diff --git a/components/browser_sync/profile_sync_service.cc b/components/browser_sync/profile_sync_service.cc
-index a0355393caba17c8343ec2a771eeb29d731d27e4..7432442fe13fef40c9c4f9ec8fddb71084e5c240 100644
+index a0355393caba17c8343ec2a771eeb29d731d27e4..08a9666b1ac5fcd6c6ab737b2874afc331e02a69 100644
 --- a/components/browser_sync/profile_sync_service.cc
 +++ b/components/browser_sync/profile_sync_service.cc
 @@ -198,6 +198,8 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
@@ -23,9 +23,18 @@ index a0355393caba17c8343ec2a771eeb29d731d27e4..7432442fe13fef40c9c4f9ec8fddb710
    DCHECK(!params.credentials.account_id.empty() || IsLocalSyncEnabled());
    if (!base::FeatureList::IsEnabled(switches::kSyncE2ELatencyMeasurement)) {
      invalidation::InvalidationService* invalidator =
-@@ -578,6 +583,7 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
+@@ -571,13 +576,14 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
+   params.short_poll_interval = sync_prefs_.GetShortPollInterval();
+   if (params.short_poll_interval.is_zero()) {
+     params.short_poll_interval =
+-        base::TimeDelta::FromSeconds(syncer::kDefaultShortPollIntervalSeconds);
++        base::TimeDelta::FromSeconds(syncer::kBraveDefaultShortPollIntervalSeconds);
+   }
+   params.long_poll_interval = sync_prefs_.GetLongPollInterval();
+   if (params.long_poll_interval.is_zero()) {
      params.long_poll_interval =
-         base::TimeDelta::FromSeconds(syncer::kDefaultLongPollIntervalSeconds);
+-        base::TimeDelta::FromSeconds(syncer::kDefaultLongPollIntervalSeconds);
++        base::TimeDelta::FromSeconds(syncer::kBraveDefaultLongPollIntervalSeconds);
    }
 +  BraveEngineParamsInit(&params);
  

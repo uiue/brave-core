@@ -21,6 +21,7 @@ using syncable::Id;
 static const char kCacheGuid[] = "IrcjZ2jyzHDV9Io4+zKcXQ==";
 const char kBookmarkBarTag[] = "bookmark_bar";
 const char kOtherBookmarksTag[] = "other_bookmarks";
+#if 0
 void AddBookmarkSpecifics(sync_pb::EntitySpecifics* specifics,
                           const std::string& title,
                           const GURL& url) {
@@ -31,6 +32,7 @@ void AddBookmarkSpecifics(sync_pb::EntitySpecifics* specifics,
   bm_specifics->set_creation_time_us(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
+#endif
 
 void AddPermanentBookmarkSpecifics(sync_pb::EntitySpecifics* specifics,
                                    const char* tag) {
@@ -86,7 +88,7 @@ void AddPermanentNode(sync_pb::SyncEntity* entity, const char* tag) {
   AddPermanentBookmarkSpecifics(&specifics, tag);
   entity->mutable_specifics()->CopyFrom(specifics);
 }
-
+#if 0
 void AddBookmarkNode(sync_pb::SyncEntity* entity) {
   DCHECK(entity);
   sync_pb::EntitySpecifics specifics;
@@ -110,6 +112,7 @@ void AddBookmarkNode(sync_pb::SyncEntity* entity) {
                       GURL("https://brave.com"));
   entity->mutable_specifics()->CopyFrom(specifics);
 }
+#endif
 
 void InitFakeUpdateResponse(sync_pb::GetUpdatesResponse* gu_response,
                             ModelTypeSet* request_types) {
@@ -129,7 +132,7 @@ void InitFakeUpdateResponse(sync_pb::GetUpdatesResponse* gu_response,
       AddRootForType(entities.Add(), BOOKMARKS);
       AddPermanentNode(entities.Add(), kBookmarkBarTag);
       AddPermanentNode(entities.Add(), kOtherBookmarksTag);
-      AddBookmarkNode(entities.Add());
+      // AddBookmarkNode(entities.Add());
       std::copy(entities.begin(), entities.end(),
                 RepeatedPtrFieldBackInserter(gu_response->mutable_entries()));
     }
