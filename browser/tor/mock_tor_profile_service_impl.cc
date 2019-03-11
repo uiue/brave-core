@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/site_instance.h"
+#include "net/http/http_auth_handler_factory.h"
 
 using content::BrowserThread;
 using content::SiteInstance;
@@ -43,6 +44,11 @@ const TorConfig& MockTorProfileServiceImpl::GetTorConfig() {
 }
 
 int64_t MockTorProfileServiceImpl::GetTorPid() { return -1; }
+
+void MockTorProfileServiceImpl::SetHttpAuthPreferences(
+    net::HttpAuthHandlerFactory* auth_factory) {
+  auth_factory->set_http_auth_preferences(&http_auth_prefs_);
+}
 
 int MockTorProfileServiceImpl::SetProxy(
     net::ProxyResolutionService* service, const GURL& request_url,

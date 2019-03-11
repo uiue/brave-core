@@ -8,6 +8,8 @@
 
 #include "brave/browser/tor/tor_profile_service.h"
 
+#include "brave/browser/net/anon_http_auth_preferences.h"
+
 class Profile;
 
 namespace tor {
@@ -24,6 +26,8 @@ class MockTorProfileServiceImpl : public TorProfileService {
   const TorConfig& GetTorConfig() override;
   int64_t GetTorPid() override;
 
+  void SetHttpAuthPreferences(net::HttpAuthHandlerFactory*) override;
+
   int SetProxy(net::ProxyResolutionService*,
                const GURL& request_url,
                bool new_circuit) override;
@@ -31,6 +35,8 @@ class MockTorProfileServiceImpl : public TorProfileService {
  private:
   Profile* profile_;  // NOT OWNED
   TorConfig config_;
+  net::AnonHttpAuthPreferences http_auth_prefs_;
+
   DISALLOW_COPY_AND_ASSIGN(MockTorProfileServiceImpl);
 };
 
