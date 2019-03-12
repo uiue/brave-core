@@ -1,5 +1,5 @@
 diff --git a/components/sync/driver/glue/sync_backend_host_impl.h b/components/sync/driver/glue/sync_backend_host_impl.h
-index c9a8f8fd314da2b7b7621d5af97326b4241e6493..c08671366076d25340b0eb8db97031feaaeedcaa 100644
+index c9a8f8fd314da2b7b7621d5af97326b4241e6493..731227c80f944f9c30b9d9cf72d364e4b54065d0 100644
 --- a/components/sync/driver/glue/sync_backend_host_impl.h
 +++ b/components/sync/driver/glue/sync_backend_host_impl.h
 @@ -154,6 +154,9 @@ class SyncBackendHostImpl : public SyncEngine, public InvalidationHandler {
@@ -7,7 +7,7 @@ index c9a8f8fd314da2b7b7621d5af97326b4241e6493..c08671366076d25340b0eb8db97031fe
        const StatusCounters& counters);
  
 +  void HandleNudgeSyncCycle();
-+  void HandlePollSyncCycle();
++  void HandlePollSyncCycle(brave_sync::GetRecordsCallback cb);
 +
    // Overwrites the kSyncInvalidationVersions preference with the most recent
    // set of invalidation versions for each type.
@@ -17,7 +17,7 @@ index c9a8f8fd314da2b7b7621d5af97326b4241e6493..c08671366076d25340b0eb8db97031fe
    bool sessions_invalidation_enabled_ = false;
  
 +  base::Closure nudge_sync_cycle_delegate_function_;
-+  base::Closure poll_sync_cycle_delegate_function_;
++  brave_sync::PollSyncCycleDelegate poll_sync_cycle_delegate_function_;
 +
    // Checks that we're on the same thread this was constructed on (UI thread).
    SEQUENCE_CHECKER(sequence_checker_);

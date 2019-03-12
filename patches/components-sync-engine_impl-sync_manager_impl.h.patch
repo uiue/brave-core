@@ -1,5 +1,5 @@
 diff --git a/components/sync/engine_impl/sync_manager_impl.h b/components/sync/engine_impl/sync_manager_impl.h
-index 4a6f7f40110d0f38bf40a994c0c5eb90535d9af5..960f62416498ee98a0c230174abea8d3a8e334ba 100644
+index 4a6f7f40110d0f38bf40a994c0c5eb90535d9af5..6e7441fb338aca7e24967c489832298ce9bca0fa 100644
 --- a/components/sync/engine_impl/sync_manager_impl.h
 +++ b/components/sync/engine_impl/sync_manager_impl.h
 @@ -138,6 +138,8 @@ class SyncManagerImpl
@@ -7,7 +7,7 @@ index 4a6f7f40110d0f38bf40a994c0c5eb90535d9af5..960f62416498ee98a0c230174abea8d3
    void OnMigrationRequested(ModelTypeSet types) override;
    void OnProtocolEvent(const ProtocolEvent& event) override;
 +  void OnNudgeSyncCycle() override;
-+  void OnPollSyncCycle() override;
++  void OnPollSyncCycle(brave_sync::GetRecordsCallback cb) override;
  
    // ServerConnectionEventListener implementation.
    void OnServerConnectionEvent(const ServerConnectionEvent& event) override;

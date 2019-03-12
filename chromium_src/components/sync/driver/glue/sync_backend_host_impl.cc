@@ -8,10 +8,11 @@ void SyncBackendHostImpl::HandleNudgeSyncCycle() {
   nudge_sync_cycle_delegate_function_.Run();
 }
 
-void SyncBackendHostImpl::HandlePollSyncCycle() {
+void SyncBackendHostImpl::HandlePollSyncCycle(
+    brave_sync::GetRecordsCallback cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(poll_sync_cycle_delegate_function_);
-  poll_sync_cycle_delegate_function_.Run();
+  poll_sync_cycle_delegate_function_.Run(cb);
 }
 
 }  // namespace syncer

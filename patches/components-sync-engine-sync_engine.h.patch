@@ -1,5 +1,5 @@
 diff --git a/components/sync/engine/sync_engine.h b/components/sync/engine/sync_engine.h
-index 826cc5072e20b1760a64e8edca2933e83f797730..63645c50a02c7e1c361dd3588262378afccdcdf7 100644
+index 826cc5072e20b1760a64e8edca2933e83f797730..2be0b5f32afc5f8efa8e07af3a791f1a099ac2a3 100644
 --- a/components/sync/engine/sync_engine.h
 +++ b/components/sync/engine/sync_engine.h
 @@ -82,6 +82,8 @@ class SyncEngine : public ModelTypeConfigurer {
@@ -7,7 +7,7 @@ index 826cc5072e20b1760a64e8edca2933e83f797730..63645c50a02c7e1c361dd3588262378a
      base::TimeDelta short_poll_interval;
      base::TimeDelta long_poll_interval;
 +    base::Closure nudge_sync_cycle_delegate_function;
-+    base::Closure poll_sync_cycle_delegate_function;
++    brave_sync::PollSyncCycleDelegate poll_sync_cycle_delegate_function;
  
     private:
      DISALLOW_COPY_AND_ASSIGN(InitParams);

@@ -1,5 +1,5 @@
 diff --git a/components/sync/engine_impl/sync_engine_event_listener.h b/components/sync/engine_impl/sync_engine_event_listener.h
-index d9f4393469a27f580c87ac7e28d2557cdb8c7e98..81f00080eaf81275c2bf5829aa39749299a3f8a7 100644
+index d9f4393469a27f580c87ac7e28d2557cdb8c7e98..6094febbdda21c932dd7ed16e1271db7d0bbd49f 100644
 --- a/components/sync/engine_impl/sync_engine_event_listener.h
 +++ b/components/sync/engine_impl/sync_engine_event_listener.h
 @@ -42,6 +42,10 @@ class SyncEngineEventListener {
@@ -8,7 +8,7 @@ index d9f4393469a27f580c87ac7e28d2557cdb8c7e98..81f00080eaf81275c2bf5829aa397492
  
 +  // TODO(darkdh): passing data later
 +  virtual void OnNudgeSyncCycle() {}
-+  virtual void OnPollSyncCycle() {}
++  virtual void OnPollSyncCycle(brave_sync::GetRecordsCallback cb) {}
 +
   protected:
    virtual ~SyncEngineEventListener();

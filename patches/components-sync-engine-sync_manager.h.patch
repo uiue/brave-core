@@ -1,5 +1,5 @@
 diff --git a/components/sync/engine/sync_manager.h b/components/sync/engine/sync_manager.h
-index 514b05be4efe57ec9ae24c99186455456e56793b..3140882ab0633be81ec0fa2a3ce296655d5c5c46 100644
+index 514b05be4efe57ec9ae24c99186455456e56793b..f5584bb6a6e7906809fda5ae786b60eedcaea296 100644
 --- a/components/sync/engine/sync_manager.h
 +++ b/components/sync/engine/sync_manager.h
 @@ -185,6 +185,10 @@ class SyncManager {
@@ -8,7 +8,7 @@ index 514b05be4efe57ec9ae24c99186455456e56793b..3140882ab0633be81ec0fa2a3ce29665
  
 +    // TODO(darkdh): passing data later
 +    virtual void OnNudgeSyncCycle() {}
-+    virtual void OnPollSyncCycle() {}
++    virtual void OnPollSyncCycle(brave_sync::GetRecordsCallback cb) {}
 +
     protected:
      virtual ~Observer();

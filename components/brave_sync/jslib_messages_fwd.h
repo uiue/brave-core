@@ -5,6 +5,7 @@
 #ifndef BRAVE_COMPONENTS_BRAVE_SYNC_JSLIB_MESSAGES_FWD_H_
 #define BRAVE_COMPONENTS_BRAVE_SYNC_JSLIB_MESSAGES_FWD_H_
 
+#include "base/callback.h"
 #include "build/build_config.h"
 
 // TODO(darkdh): forward declaration with unique_ptr on Windows
@@ -28,6 +29,10 @@ typedef std::unique_ptr<SyncRecordAndExisting> SyncRecordAndExistingPtr;
 typedef std::vector<SyncRecordAndExistingPtr> SyncRecordAndExistingList;
 
 using Uint8Array = std::vector<unsigned char>;
+using GetRecordsCallback =
+  base::RepeatingCallback<void(std::unique_ptr<RecordsList>)>;
+using PollSyncCycleDelegate =
+  base::Callback<void(GetRecordsCallback)>;
 
 }  // namespace brave_sync
 

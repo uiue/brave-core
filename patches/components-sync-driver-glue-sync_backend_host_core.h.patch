@@ -1,5 +1,5 @@
 diff --git a/components/sync/driver/glue/sync_backend_host_core.h b/components/sync/driver/glue/sync_backend_host_core.h
-index dced9de5a2081185acb22c900e69e90080e54cdf..ab0076ffd7a0f614b3560f73a9a4c3a88a1c63da 100644
+index dced9de5a2081185acb22c900e69e90080e54cdf..08c68a1f6d49bf4876fae701ae4365652c0ffb56 100644
 --- a/components/sync/driver/glue/sync_backend_host_core.h
 +++ b/components/sync/driver/glue/sync_backend_host_core.h
 @@ -59,6 +59,8 @@ class SyncBackendHostCore
@@ -7,7 +7,7 @@ index dced9de5a2081185acb22c900e69e90080e54cdf..ab0076ffd7a0f614b3560f73a9a4c3a8
    void OnMigrationRequested(ModelTypeSet types) override;
    void OnProtocolEvent(const ProtocolEvent& event) override;
 +  void OnNudgeSyncCycle() override;
-+  void OnPollSyncCycle() override;
++  void OnPollSyncCycle(brave_sync::GetRecordsCallback cb) override;
  
    // TypeDebugInfoObserver implementation
    void OnCommitCountersUpdated(ModelType type,

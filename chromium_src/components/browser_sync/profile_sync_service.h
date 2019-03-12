@@ -1,5 +1,6 @@
 #include "brave/components/brave_sync/brave_sync_service.h"
 #include "brave/components/brave_sync/client/brave_sync_client.h"
+#include "brave/components/brave_sync/jslib_messages_fwd.h"
 
 namespace brave_sync {
 namespace prefs {

@@ -7,9 +7,9 @@ void SyncBackendHostCore::OnNudgeSyncCycle() {
              &SyncBackendHostImpl::HandleNudgeSyncCycle);
 }
 
-void SyncBackendHostCore::OnPollSyncCycle() {
+void SyncBackendHostCore::OnPollSyncCycle(brave_sync::GetRecordsCallback cb) {
   host_.Call(FROM_HERE,
-             &SyncBackendHostImpl::HandlePollSyncCycle);
+             &SyncBackendHostImpl::HandlePollSyncCycle, cb);
 }
 
 }  // namespace syncer

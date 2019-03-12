@@ -1,0 +1,12 @@
+diff --git a/components/sync/engine_impl/syncer.h b/components/sync/engine_impl/syncer.h
+index fd1203f8963834e69ce80be254527deecf57fdfd..f894484a691f7efe29cb43a1efd3722b31f3cdc5 100644
+--- a/components/sync/engine_impl/syncer.h
++++ b/components/sync/engine_impl/syncer.h
+@@ -78,6 +78,7 @@ class Syncer {
+   bool DownloadAndApplyUpdates(ModelTypeSet* request_types,
+                                SyncCycle* cycle,
+                                const GetUpdatesDelegate& delegate);
++  void OnGetRecords(std::unique_ptr<brave_sync::RecordsList> records);
+ 
+   // This function will commit batches of unsynced items to the server until the
+   // number of unsynced and ready to commit items reaches zero or an error is

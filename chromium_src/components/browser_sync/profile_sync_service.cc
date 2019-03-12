@@ -25,14 +25,20 @@ const int64_t kBraveDefaultLongPollIntervalSeconds = 90;
 
 namespace browser_sync {
 
+using brave_sync::GetRecordsCallback;
 using brave_sync::jslib::Device;
 using brave_sync::jslib::SyncRecord;
+using brave_sync::jslib_const::kHistorySites;
+using brave_sync::jslib_const::kBookmarks;
+using brave_sync::jslib_const::kPreferences;
 using brave_sync::jslib_const::SyncObjectData_DEVICE;
 using brave_sync::jslib_const::SyncRecordType_PREFERENCES;
 using brave_sync::RecordsList;
 using brave_sync::RecordsListPtr;
 using brave_sync::StrFromUint8Array;
 using brave_sync::SyncDevice;
+using brave_sync::SyncRecordAndExisting;
+using brave_sync::SyncRecordAndExistingList;
 using brave_sync::SyncRecordPtr;
 using brave_sync::tools::IsTimeEmpty;
 using brave_sync::Uint8Array;
@@ -93,6 +99,17 @@ RecordsListPtr CreateDeviceCreationRecordExtension(
   records->emplace_back(std::move(record));
 
   return records;
+}
+
+void CreateEmptyResolveList(
+    const std::vector<std::unique_ptr<SyncRecord>>& records,
+    SyncRecordAndExistingList* records_and_existing_objects) {
+  for (const auto& record : records) {
+    auto resolved_record = std::make_unique<SyncRecordAndExisting>();
+    resolved_record->first = SyncRecord::Clone(*record);
+
+    records_and_existing_objects->push_back(std::move(resolved_record));
+  }
 }
 
 }
@@ -355,8 +372,6 @@ void ProfileSyncService::OnSyncReady() {
   brave_sync_initialized_ = true;
 
   user_settings_->SetSyncRequested(true);
-  // fetch the records
-  // RequestSyncData();
 }
 
 void ProfileSyncService::OnGetExistingObjects(
@@ -365,26 +380,21 @@ void ProfileSyncService::OnGetExistingObjects(
     const base::Time &last_record_time_stamp,
     const bool is_truncated) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-#if 0
   // TODO(bridiver) - what do we do with is_truncated ?
   // It appears to be ignored in b-l
-  if (!tools::IsTimeEmpty(last_record_time_stamp)) {
+  if (!IsTimeEmpty(last_record_time_stamp)) {
     brave_sync_prefs_->SetLatestRecordTime(last_record_time_stamp);
   }
 
-  if (category_name == jslib_const::kBookmarks) {
+  if (category_name == kBookmarks) {
     auto records_and_existing_objects =
         std::make_unique<SyncRecordAndExistingList>();
-    bookmark_change_processor_->GetAllSyncData(
+    // resolve conflicts in chromium
+    CreateEmptyResolveList(
         *records.get(), records_and_existing_objects.get());
-    sync_client_->SendResolveSyncRecords(
+    GetBraveSyncClient()->SendResolveSyncRecords(
         category_name, std::move(records_and_existing_objects));
-  } else if (category_name == brave_sync::jslib_const::kPreferences) {
-    auto existing_records = PrepareResolvedPreferences(*records.get());
-    sync_client_->SendResolveSyncRecords(
-        category_name, std::move(existing_records));
   }
-#endif
 }
 
 void ProfileSyncService::OnResolvedSyncRecords(
@@ -393,15 +403,13 @@ void ProfileSyncService::OnResolvedSyncRecords(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (category_name == brave_sync::jslib_const::kPreferences) {
     OnResolvedPreferences(*records.get());
-  }
-#if 0
-  } else if (category_name == brave_sync::jslib_const::kBookmarks) {
-    bookmark_change_processor_->ApplyChangesFromSyncModel(*records.get());
-    bookmark_change_processor_->SendUnsynced(unsynced_send_interval_);
-  } else if (category_name == brave_sync::jslib_const::kHistorySites) {
+  } else if (category_name == kBookmarks) {
+    // Send records to syncer
+    if (get_record_cb_)
+      get_record_cb_.Run(std::move(records));
+  } else if (category_name == kHistorySites) {
     NOTIMPLEMENTED();
   }
-#endif
 }
 
 void ProfileSyncService::OnDeletedSyncUser() {
@@ -451,6 +459,36 @@ void ProfileSyncService::ResetSyncInternal() {
   brave_sync_initialized_ = false;
 
   brave_sync_prefs_->SetSyncEnabled(false);
+}
+
+void ProfileSyncService::FetchSyncRecords(const bool bookmarks,
+                                          const bool history,
+                                          const bool preferences,
+                                          int max_records) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(bookmarks || history || preferences);
+  if (!(bookmarks || history || preferences)) {
+    return;
+  }
+
+  std::vector<std::string> category_names;
+  if (history) {
+    category_names.push_back(kHistorySites);  // "HISTORY_SITES";
+  }
+  if (bookmarks) {
+    category_names.push_back(kBookmarks);    // "BOOKMARKS";
+  }
+  if (preferences) {
+    category_names.push_back(kPreferences);  // "PREFERENCES";
+  }
+
+  brave_sync_prefs_->SetLastFetchTime(base::Time::Now());
+
+  base::Time start_at_time = brave_sync_prefs_->GetLatestRecordTime();
+  GetBraveSyncClient()->SendFetchSyncRecords(
+    category_names,
+    start_at_time,
+    max_records);
 }
 
 void ProfileSyncService::SendCreateDevice() {
@@ -594,14 +632,19 @@ void ProfileSyncService::OnNudgeSyncCycle(){
   LOG(ERROR) << __func__;
 }
 
-void ProfileSyncService::OnPollSyncCycle(){
+void ProfileSyncService::OnPollSyncCycle(GetRecordsCallback cb){
   LOG(ERROR) << __func__;
 
   if (IsTimeEmpty(brave_sync_prefs_->GetLastFetchTime()))
     SendCreateDevice();
   GetBraveSyncClient()->SendFetchSyncDevices();
-  // FetchSyncRecords(bookmarks, history, preferences, 1000);
-  brave_sync_prefs_->SetLastFetchTime(base::Time::Now());
+
+  get_record_cb_ = cb;
+
+  const bool bookmarks = brave_sync_prefs_->GetSyncBookmarksEnabled();
+  const bool history = brave_sync_prefs_->GetSyncHistoryEnabled();
+  const bool preferences = brave_sync_prefs_->GetSyncSiteSettingsEnabled();
+  FetchSyncRecords(bookmarks, history, preferences, 1000);
 }
 
 }   // namespace browser_sync

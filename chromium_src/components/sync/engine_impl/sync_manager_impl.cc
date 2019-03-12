@@ -1,4 +1,5 @@
 #include "../../../../../components/sync/engine_impl/sync_manager_impl.cc"
+#include "brave/components/brave_sync/jslib_messages.h"
 
 namespace syncer {
 
@@ -8,9 +9,9 @@ void SyncManagerImpl::OnNudgeSyncCycle() {
   }
 }
 
-void SyncManagerImpl::OnPollSyncCycle() {
+void SyncManagerImpl::OnPollSyncCycle(brave_sync::GetRecordsCallback cb) {
   for (auto& observer : observers_) {
-    observer.OnPollSyncCycle();
+    observer.OnPollSyncCycle(cb);
   }
 }
 
