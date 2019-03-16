@@ -10,6 +10,5 @@ const char kStaging[] = "brave-ads-staging";
 const char kProduction[] = "brave-ads-production";
 const char kDebug[] = "brave-ads-debug";
 const char kTesting[] = "brave-ads-testing";
-const char kLocale[] = "brave-ads-locale";
 }  // namespace switches
 }  // namespace brave_ads

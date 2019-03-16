@@ -34,9 +34,9 @@ class BundleStateDatabase {
   }
 
   bool SaveBundleState(const ads::BundleState& bundle_state);
-  bool GetAdsForCategory(const std::string& region,
-                         const std::string& category,
-                         std::vector<ads::AdInfo>& ads);
+  bool GetAdsForCategory(
+      const std::string& category,
+      std::vector<ads::AdInfo>& ads);
 
   // Returns the current version of the publisher info database
   static int GetCurrentVersion();
@@ -50,7 +50,7 @@ class BundleStateDatabase {
  private:
   bool Init();
   void OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
   bool CreateCategoryTable();
   bool CreateAdInfoTable();
@@ -63,8 +63,9 @@ class BundleStateDatabase {
 
   bool InsertOrUpdateCategory(const std::string& category);
   bool InsertOrUpdateAdInfo(const ads::AdInfo& info);
-  bool InsertOrUpdateAdInfoCategory(const ads::AdInfo& ad_info,
-                                    const std::string& category);
+  bool InsertOrUpdateAdInfoCategory(
+      const ads::AdInfo& ad_info,
+      const std::string& category);
 
   sql::Database& GetDB();
   sql::MetaTable& GetMetaTable();
