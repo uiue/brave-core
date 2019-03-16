@@ -1,8 +1,12 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
+/* Copyright (c) 2019 The Brave Authors. All rights reserved.
+ * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "brave/components/brave_referrals/browser/brave_referrals_service.h"
+
+#include <memory>
+#include <utility>
 
 #include "base/environment.h"
 #include "base/files/file_path.h"
@@ -71,7 +75,7 @@ std::string BuildReferralEndpoint(const std::string& path) {
                             path.c_str());
 }
 
-} // namespace
+}  // namespace
 
 namespace brave {
 
@@ -187,7 +191,8 @@ void BraveReferralsService::OnReferralHeadersLoadComplete(
     return;
   }
 
-  std::unique_ptr<base::Value> root = base::JSONReader().ReadToValue(*response_body);
+  std::unique_ptr<base::Value> root =
+      base::JSONReader().ReadToValue(*response_body);
   if (!root || !root->is_list()) {
     LOG(ERROR) << "Failed to parse referral headers response";
     return;
@@ -214,14 +219,16 @@ void BraveReferralsService::OnReferralInitLoadComplete(
     return;
   }
 
-  std::unique_ptr<base::Value> root = base::JSONReader().ReadToValue(*response_body);
+  std::unique_ptr<base::Value> root =
+      base::JSONReader().ReadToValue(*response_body);
   if (!root || !root->is_dict()) {
     LOG(ERROR) << "Failed to parse referral initialization response";
     return;
   }
   if (!root->FindKey("download_id")) {
-    LOG(ERROR) << "Failed to locate download_id in referral initialization response"
-               << ", payload: " << *response_body;
+    LOG(ERROR)
+        << "Failed to locate download_id in referral initialization response"
+        << ", payload: " << *response_body;
     return;
   }
 
@@ -269,7 +276,8 @@ void BraveReferralsService::OnReferralFinalizationCheckLoadComplete(
     return;
   }
 
-  std::unique_ptr<base::Value> root = base::JSONReader().ReadToValue(*response_body);
+  std::unique_ptr<base::Value> root =
+      base::JSONReader().ReadToValue(*response_body);
   if (!root) {
     LOG(ERROR) << "Failed to parse referral finalization check response";
     return;
@@ -420,7 +428,8 @@ std::string BraveReferralsService::BuildReferralInitPayload() const {
   return result;
 }
 
-std::string BraveReferralsService::BuildReferralFinalizationCheckPayload() const {
+std::string BraveReferralsService::BuildReferralFinalizationCheckPayload()
+    const {
   std::string api_key = BRAVE_REFERRALS_API_KEY;
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   if (env->HasVar("BRAVE_REFERRALS_API_KEY"))
@@ -439,7 +448,8 @@ std::string BraveReferralsService::BuildReferralFinalizationCheckPayload() const
 
 void BraveReferralsService::FetchReferralHeaders() {
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("brave_referral_headers_fetcher", R"(
+      net::DefineNetworkTrafficAnnotation(
+        "brave_referral_headers_fetcher", R"(
         semantics {
           sender:
             "Brave Referrals Service"
@@ -522,7 +532,8 @@ void BraveReferralsService::InitReferral() {
 
 void BraveReferralsService::CheckForReferralFinalization() {
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("brave_referral_finalization_checker", R"(
+      net::DefineNetworkTrafficAnnotation(
+        "brave_referral_finalization_checker", R"(
         semantics {
           sender:
             "Brave Referrals Service"
@@ -592,7 +603,8 @@ std::string BraveReferralsService::FormatExtraHeaders(
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<BraveReferralsService> BraveReferralsServiceFactory(PrefService* pref_service) {
+std::unique_ptr<BraveReferralsService> BraveReferralsServiceFactory(
+    PrefService* pref_service) {
   return std::make_unique<BraveReferralsService>(pref_service);
 }
 
