@@ -1,5 +1,5 @@
 diff --git a/components/sync/engine/sync_engine.h b/components/sync/engine/sync_engine.h
-index 826cc5072e20b1760a64e8edca2933e83f797730..2be0b5f32afc5f8efa8e07af3a791f1a099ac2a3 100644
+index 826cc5072e20b1760a64e8edca2933e83f797730..89c0e174bbf8e481495909db8b4bb76b431c2af9 100644
 --- a/components/sync/engine/sync_engine.h
 +++ b/components/sync/engine/sync_engine.h
 @@ -82,6 +82,8 @@ class SyncEngine : public ModelTypeConfigurer {
@@ -11,3 +11,14 @@ index 826cc5072e20b1760a64e8edca2933e83f797730..2be0b5f32afc5f8efa8e07af3a791f1a
  
     private:
      DISALLOW_COPY_AND_ASSIGN(InitParams);
+@@ -191,6 +193,10 @@ class SyncEngine : public ModelTypeConfigurer {
+   // Enables/Disables invalidations for session sync related datatypes.
+   virtual void SetInvalidationsForSessionsEnabled(bool enabled) = 0;
+ 
++  virtual void DispatchGetRecordsCallback(
++      brave_sync::GetRecordsCallback cb,
++      std::unique_ptr<brave_sync::RecordsList> records) {};
++
+  private:
+   DISALLOW_COPY_AND_ASSIGN(SyncEngine);
+ };

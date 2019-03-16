@@ -12,6 +12,7 @@ const int64_t kBraveDefaultLongPollIntervalSeconds = 90;
 }
 #include "../../../../components/browser_sync/profile_sync_service.cc"
 
+#include "base/bind.h"
 #include "brave/components/brave_sync/brave_sync_prefs.h"
 #include "brave/components/brave_sync/brave_sync_service_observer.h"
 #include "brave/components/brave_sync/jslib_const.h"
@@ -20,6 +21,7 @@ const int64_t kBraveDefaultLongPollIntervalSeconds = 90;
 #include "brave/components/brave_sync/sync_devices.h"
 #include "brave/components/brave_sync/tools.h"
 #include "brave/components/brave_sync/values_conv.h"
+#include "components/sync/engine_impl/syncer.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/network_interfaces.h"
 
@@ -406,7 +408,9 @@ void ProfileSyncService::OnResolvedSyncRecords(
   } else if (category_name == kBookmarks) {
     // Send records to syncer
     if (get_record_cb_)
-      get_record_cb_.Run(std::move(records));
+      engine_->DispatchGetRecordsCallback(get_record_cb_, std::move(records));
+    DCHECK(wevent_);
+    wevent_->Signal();
   } else if (category_name == kHistorySites) {
     NOTIMPLEMENTED();
   }
@@ -632,7 +636,8 @@ void ProfileSyncService::OnNudgeSyncCycle(){
   LOG(ERROR) << __func__;
 }
 
-void ProfileSyncService::OnPollSyncCycle(GetRecordsCallback cb){
+void ProfileSyncService::OnPollSyncCycle(GetRecordsCallback cb,
+                                         base::WaitableEvent* wevent){
   LOG(ERROR) << __func__;
 
   if (IsTimeEmpty(brave_sync_prefs_->GetLastFetchTime()))
@@ -640,6 +645,7 @@ void ProfileSyncService::OnPollSyncCycle(GetRecordsCallback cb){
   GetBraveSyncClient()->SendFetchSyncDevices();
 
   get_record_cb_ = cb;
+  wevent_ = wevent;
 
   const bool bookmarks = brave_sync_prefs_->GetSyncBookmarksEnabled();
   const bool history = brave_sync_prefs_->GetSyncHistoryEnabled();

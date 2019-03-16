@@ -1,0 +1,12 @@
+diff --git a/components/sync/engine_impl/sync_scheduler_impl.h b/components/sync/engine_impl/sync_scheduler_impl.h
+index c2233fd5f7de560e47970eaa2d710d26c0b74e27..37361b293878aa301e6a1211249b212c0e39324e 100644
+--- a/components/sync/engine_impl/sync_scheduler_impl.h
++++ b/components/sync/engine_impl/sync_scheduler_impl.h
+@@ -183,6 +183,7 @@ class SyncSchedulerImpl : public SyncScheduler {
+   // current thread. In the future it will request access token here.
+   void TrySyncCycleJob();
+   void TrySyncCycleJobImpl();
++  void TryBraveSyncCycleJob();
+ 
+   // Transitions out of the THROTTLED WaitInterval then calls TryCanaryJob().
+   // This function is for global throttling.

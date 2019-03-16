@@ -1,13 +1,15 @@
+#include "brave/components/brave_sync/jslib_messages.h"
 #include "components/sync/base/model_type.h"
 namespace sync_pb {
-class GetUpdatesResponse;
-}
+class ClientToServerResponse;
+}  // namespace sync_pb
 
 namespace syncer {
+class SyncerError;
 namespace {
-void InitFakeUpdateResponse(sync_pb::GetUpdatesResponse*, ModelTypeSet*);
-}
-}
+SyncerError ApplyBraveRecords(sync_pb::ClientToServerResponse*, ModelTypeSet*);
+}   // namespace
+}   // namespace syncer
 #include "../../../../../components/sync/engine_impl/get_updates_processor.cc"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -140,5 +142,21 @@ void InitFakeUpdateResponse(sync_pb::GetUpdatesResponse* gu_response,
   gu_response->set_changes_remaining(0);
 }
 
+SyncerError ApplyBraveRecords(sync_pb::ClientToServerResponse* update_response,
+                              ModelTypeSet* request_types) {
+  DCHECK(update_response);
+  DCHECK(request_types);
+  sync_pb::GetUpdatesResponse* gu_response = new sync_pb::GetUpdatesResponse();
+  InitFakeUpdateResponse(gu_response, request_types);
+  update_response->set_allocated_get_updates(gu_response);
+  return SyncerError(SyncerError::SYNCER_OK);
 }
+
+}   // namespace
+
+void GetUpdatesProcessor::AddBraveRecords(
+    std::unique_ptr<RecordsList> records) {
+  brave_records_ = std::move(records);
 }
+
+}   // namespace syncer

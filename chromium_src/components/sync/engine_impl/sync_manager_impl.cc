@@ -9,9 +9,10 @@ void SyncManagerImpl::OnNudgeSyncCycle() {
   }
 }
 
-void SyncManagerImpl::OnPollSyncCycle(brave_sync::GetRecordsCallback cb) {
+void SyncManagerImpl::OnPollSyncCycle(brave_sync::GetRecordsCallback cb,
+                                      base::WaitableEvent* wevent) {
   for (auto& observer : observers_) {
-    observer.OnPollSyncCycle(cb);
+    observer.OnPollSyncCycle(cb, wevent);
   }
 }
 

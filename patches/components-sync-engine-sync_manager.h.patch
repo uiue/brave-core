@@ -1,14 +1,15 @@
 diff --git a/components/sync/engine/sync_manager.h b/components/sync/engine/sync_manager.h
-index 514b05be4efe57ec9ae24c99186455456e56793b..f5584bb6a6e7906809fda5ae786b60eedcaea296 100644
+index 514b05be4efe57ec9ae24c99186455456e56793b..66d2455688df7f98a7ec52dcf7de827128cf9ece 100644
 --- a/components/sync/engine/sync_manager.h
 +++ b/components/sync/engine/sync_manager.h
-@@ -185,6 +185,10 @@ class SyncManager {
+@@ -185,6 +185,11 @@ class SyncManager {
  
      virtual void OnProtocolEvent(const ProtocolEvent& event) = 0;
  
 +    // TODO(darkdh): passing data later
 +    virtual void OnNudgeSyncCycle() {}
-+    virtual void OnPollSyncCycle(brave_sync::GetRecordsCallback cb) {}
++    virtual void OnPollSyncCycle(brave_sync::GetRecordsCallback cb,
++                                 base::WaitableEvent* wevent) {}
 +
     protected:
      virtual ~Observer();

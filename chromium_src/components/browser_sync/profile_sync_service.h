@@ -8,4 +8,8 @@ class Prefs;
 }  // namespace prefs
 }  // namespace brave_sync
 
+namespace syncer {
+class Syncer;
+}   // namespace syncer
+
 #include "../../../../components/browser_sync/profile_sync_service.h"

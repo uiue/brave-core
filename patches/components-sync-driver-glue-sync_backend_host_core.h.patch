@@ -1,13 +1,24 @@
 diff --git a/components/sync/driver/glue/sync_backend_host_core.h b/components/sync/driver/glue/sync_backend_host_core.h
-index dced9de5a2081185acb22c900e69e90080e54cdf..08c68a1f6d49bf4876fae701ae4365652c0ffb56 100644
+index dced9de5a2081185acb22c900e69e90080e54cdf..5d614f7a072b227bc9f40a55c207058384a19a51 100644
 --- a/components/sync/driver/glue/sync_backend_host_core.h
 +++ b/components/sync/driver/glue/sync_backend_host_core.h
-@@ -59,6 +59,8 @@ class SyncBackendHostCore
+@@ -59,6 +59,9 @@ class SyncBackendHostCore
    void OnActionableError(const SyncProtocolError& sync_error) override;
    void OnMigrationRequested(ModelTypeSet types) override;
    void OnProtocolEvent(const ProtocolEvent& event) override;
 +  void OnNudgeSyncCycle() override;
-+  void OnPollSyncCycle(brave_sync::GetRecordsCallback cb) override;
++  void OnPollSyncCycle(GetRecordsCallback cb,
++                       base::WaitableEvent* wevent) override;
  
    // TypeDebugInfoObserver implementation
    void OnCommitCountersUpdated(ModelType type,
+@@ -176,6 +179,9 @@ class SyncBackendHostCore
+ 
+   bool HasUnsyncedItemsForTest() const;
+ 
++  void DoDispatchGetRecordsCallback(GetRecordsCallback cb,
++                                    std::unique_ptr<RecordsList> records);
++
+  private:
+   friend class base::RefCountedThreadSafe<SyncBackendHostCore>;
+ 

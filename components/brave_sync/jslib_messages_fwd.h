@@ -6,6 +6,7 @@
 #define BRAVE_COMPONENTS_BRAVE_SYNC_JSLIB_MESSAGES_FWD_H_
 
 #include "base/callback.h"
+#include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 
 // TODO(darkdh): forward declaration with unique_ptr on Windows
@@ -18,6 +19,10 @@ class SyncRecord;
 }
 }
 #endif
+
+namespace syncer {
+class Syncer;
+}   // namespace syncer
 
 namespace brave_sync {
 
@@ -32,7 +37,7 @@ using Uint8Array = std::vector<unsigned char>;
 using GetRecordsCallback =
   base::RepeatingCallback<void(std::unique_ptr<RecordsList>)>;
 using PollSyncCycleDelegate =
-  base::Callback<void(GetRecordsCallback)>;
+  base::Callback<void(GetRecordsCallback, base::WaitableEvent* wevent)>;
 
 }  // namespace brave_sync
 

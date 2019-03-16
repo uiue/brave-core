@@ -1,21 +1,24 @@
 diff --git a/components/sync/engine_impl/syncer.cc b/components/sync/engine_impl/syncer.cc
-index d4d745fcd5a2d254dfcbdc44ed370e4479b28698..d65fb08ede95311a71daf7ff9f8c6190ac626697 100644
+index d4d745fcd5a2d254dfcbdc44ed370e4479b28698..5f54843e0d21984b355ea4b7477f8c1fdfe60a55 100644
 --- a/components/sync/engine_impl/syncer.cc
 +++ b/components/sync/engine_impl/syncer.cc
-@@ -112,6 +112,12 @@ bool Syncer::DownloadAndApplyUpdates(ModelTypeSet* request_types,
+@@ -34,6 +34,7 @@ void HandleCycleBegin(SyncCycle* cycle) {
+ 
+ Syncer::Syncer(CancelationSignal* cancelation_signal)
+     : cancelation_signal_(cancelation_signal), is_syncing_(false) {}
++    // weak_ptr_factory_(this) {}
+ 
+ Syncer::~Syncer() {}
+ 
+@@ -111,6 +112,7 @@ bool Syncer::DownloadAndApplyUpdates(ModelTypeSet* request_types,
+       Difference(*request_types, requested_commit_only_types);
    GetUpdatesProcessor get_updates_processor(
        cycle->context()->model_type_registry()->update_handler_map(), delegate);
++  get_updates_processor.AddBraveRecords(std::move(brave_records_));
    SyncerError download_result;
-+  // TODO(darkdh): dispatch request to UI and pass back the result
-+  // syncer will be alive as long as sync is enabled
-+  brave_sync::GetRecordsCallback on_get_records =
-+    base::BindRepeating(&Syncer::OnGetRecords, base::Unretained(this));
-+  for (auto& observer : *cycle->context()->listeners())
-+    observer.OnPollSyncCycle(on_get_records);
    do {
      download_result =
-         get_updates_processor.DownloadUpdates(&download_types, cycle);
-@@ -167,9 +173,14 @@ SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
+@@ -167,9 +169,14 @@ SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
        break;
      }
  

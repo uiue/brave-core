@@ -1,8 +1,16 @@
 diff --git a/components/sync/engine_impl/get_updates_processor.cc b/components/sync/engine_impl/get_updates_processor.cc
-index df71de3ef237e61b5cda7d96fe3a24a8f8f1bf6f..17e4b965b8c32bdff84e889c7851845032ce8623 100644
+index df71de3ef237e61b5cda7d96fe3a24a8f8f1bf6f..ef0d6c8a9050637ce34937e31cd79bd4a1b7b4f4 100644
 --- a/components/sync/engine_impl/get_updates_processor.cc
 +++ b/components/sync/engine_impl/get_updates_processor.cc
-@@ -37,6 +37,7 @@ bool ShouldRequestEncryptionKey(SyncCycleContext* context) {
+@@ -28,6 +28,7 @@ using TypeSyncEntityMap = std::map<ModelType, SyncEntityList>;
+ using TypeToIndexMap = std::map<ModelType, size_t>;
+ 
+ bool ShouldRequestEncryptionKey(SyncCycleContext* context) {
++  return false;
+   syncable::Directory* dir = context->directory();
+   syncable::ReadTransaction trans(FROM_HERE, dir);
+   syncable::NigoriHandler* nigori_handler = dir->GetNigoriHandler();
+@@ -37,6 +38,7 @@ bool ShouldRequestEncryptionKey(SyncCycleContext* context) {
  SyncerError HandleGetEncryptionKeyResponse(
      const sync_pb::ClientToServerResponse& update_response,
      syncable::Directory* dir) {
@@ -10,7 +18,7 @@ index df71de3ef237e61b5cda7d96fe3a24a8f8f1bf6f..17e4b965b8c32bdff84e889c78518450
    bool success = false;
    if (update_response.get_updates().encryption_keys_size() == 0) {
      LOG(ERROR) << "Failed to receive encryption key from server.";
-@@ -220,8 +221,12 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
+@@ -220,8 +222,9 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
  
    ModelTypeSet partial_failure_data_types;
  
@@ -18,10 +26,7 @@ index df71de3ef237e61b5cda7d96fe3a24a8f8f1bf6f..17e4b965b8c32bdff84e889c78518450
 -      msg, &update_response, cycle, &partial_failure_data_types);
 +  // SyncerError result = SyncerProtoUtil::PostClientToServerMessage(
 +  //     msg, &update_response, cycle, &partial_failure_data_types);
-+  sync_pb::GetUpdatesResponse* gu_response = new sync_pb::GetUpdatesResponse();
-+  InitFakeUpdateResponse(gu_response, request_types);
-+  update_response.set_allocated_get_updates(gu_response);
-+  SyncerError result(SyncerError::SYNCER_OK);
++  SyncerError result = ApplyBraveRecords(&update_response, request_types);
  
    DVLOG(2) << SyncerProtoUtil::ClientToServerResponseDebugString(
        update_response);

@@ -1,5 +1,7 @@
 #include "../../../../../../components/sync/driver/glue/sync_backend_host_impl.cc"
 
+#include "brave/components/brave_sync/jslib_messages.h"
+
 namespace syncer {
 
 void SyncBackendHostImpl::HandleNudgeSyncCycle() {
@@ -9,10 +11,19 @@ void SyncBackendHostImpl::HandleNudgeSyncCycle() {
 }
 
 void SyncBackendHostImpl::HandlePollSyncCycle(
-    brave_sync::GetRecordsCallback cb) {
+    GetRecordsCallback cb,
+    base::WaitableEvent* wevent) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(poll_sync_cycle_delegate_function_);
-  poll_sync_cycle_delegate_function_.Run(cb);
+  poll_sync_cycle_delegate_function_.Run(cb, wevent);
 }
 
-}  // namespace syncer
+void SyncBackendHostImpl::DispatchGetRecordsCallback(
+    GetRecordsCallback cb, std::unique_ptr<RecordsList> records) {
+  sync_task_runner_->PostTask(
+    FROM_HERE,
+    base::BindOnce(&SyncBackendHostCore::DoDispatchGetRecordsCallback, core_,
+                   cb, std::move(records)));
+}
+
+}  // namespacd syncer

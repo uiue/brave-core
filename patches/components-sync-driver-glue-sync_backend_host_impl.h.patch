@@ -1,18 +1,21 @@
 diff --git a/components/sync/driver/glue/sync_backend_host_impl.h b/components/sync/driver/glue/sync_backend_host_impl.h
-index c9a8f8fd314da2b7b7621d5af97326b4241e6493..731227c80f944f9c30b9d9cf72d364e4b54065d0 100644
+index c9a8f8fd314da2b7b7621d5af97326b4241e6493..4b7227dabd60e76ce8ad271ef0dffba2e2459913 100644
 --- a/components/sync/driver/glue/sync_backend_host_impl.h
 +++ b/components/sync/driver/glue/sync_backend_host_impl.h
-@@ -154,6 +154,9 @@ class SyncBackendHostImpl : public SyncEngine, public InvalidationHandler {
+@@ -154,6 +154,12 @@ class SyncBackendHostImpl : public SyncEngine, public InvalidationHandler {
        ModelType type,
        const StatusCounters& counters);
  
 +  void HandleNudgeSyncCycle();
-+  void HandlePollSyncCycle(brave_sync::GetRecordsCallback cb);
++  void HandlePollSyncCycle(GetRecordsCallback cb,
++                           base::WaitableEvent* wevent);
++  void DispatchGetRecordsCallback(
++      GetRecordsCallback cb, std::unique_ptr<RecordsList> records) override;
 +
    // Overwrites the kSyncInvalidationVersions preference with the most recent
    // set of invalidation versions for each type.
    void UpdateInvalidationVersions(
-@@ -229,6 +232,9 @@ class SyncBackendHostImpl : public SyncEngine, public InvalidationHandler {
+@@ -229,6 +235,9 @@ class SyncBackendHostImpl : public SyncEngine, public InvalidationHandler {
    ModelTypeSet last_enabled_types_;
    bool sessions_invalidation_enabled_ = false;
  
