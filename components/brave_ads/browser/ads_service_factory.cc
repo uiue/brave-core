@@ -78,7 +78,7 @@ void AdsServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kBraveAdsEnabled, false);
   registry->RegisterUint64Pref(prefs::kBraveAdsPerHour, 2);
-  registry->RegisterUint64Pref(prefs::kBraveAdsPerDay, 6);
+  registry->RegisterUint64Pref(prefs::kBraveAdsPerDay, 20);
   registry->RegisterIntegerPref(prefs::kBraveAdsIdleThreshold, 15);
 }
 
