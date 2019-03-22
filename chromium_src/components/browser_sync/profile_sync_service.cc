@@ -391,7 +391,8 @@ void ProfileSyncService::OnGetExistingObjects(
   if (category_name == kBookmarks) {
     auto records_and_existing_objects =
         std::make_unique<SyncRecordAndExistingList>();
-    // resolve conflicts in chromium
+    // TODO(darkdh): replying with exisiting records to prevent same records
+    // from being sent multiple times
     CreateEmptyResolveList(
         *records.get(), records_and_existing_objects.get());
     GetBraveSyncClient()->SendResolveSyncRecords(
@@ -632,17 +633,24 @@ void ProfileSyncService::BraveEngineParamsInit(
                           sync_enabled_weak_factory_.GetWeakPtr());
 }
 
-void ProfileSyncService::OnNudgeSyncCycle(){
+void ProfileSyncService::OnNudgeSyncCycle(
+    brave_sync::RecordsListPtr records_list) {
   LOG(ERROR) << __func__;
+  LOG(ERROR) << records_list->size();
 }
 
 void ProfileSyncService::OnPollSyncCycle(GetRecordsCallback cb,
-                                         base::WaitableEvent* wevent){
+                                         base::WaitableEvent* wevent) {
   LOG(ERROR) << __func__;
 
   if (IsTimeEmpty(brave_sync_prefs_->GetLastFetchTime()))
     SendCreateDevice();
   GetBraveSyncClient()->SendFetchSyncDevices();
+
+  if (!brave_sync_initialized_) {
+    wevent->Signal();
+    return;
+  }
 
   get_record_cb_ = cb;
   wevent_ = wevent;

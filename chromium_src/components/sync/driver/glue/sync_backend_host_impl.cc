@@ -4,10 +4,11 @@
 
 namespace syncer {
 
-void SyncBackendHostImpl::HandleNudgeSyncCycle() {
+void SyncBackendHostImpl::HandleNudgeSyncCycle(
+    brave_sync::RecordsListPtr records_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(nudge_sync_cycle_delegate_function_);
-  nudge_sync_cycle_delegate_function_.Run();
+  nudge_sync_cycle_delegate_function_.Run(std::move(records_list));
 }
 
 void SyncBackendHostImpl::HandlePollSyncCycle(

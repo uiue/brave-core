@@ -17,8 +17,7 @@ void Syncer::DownloadBraveRecords(SyncCycle* cycle) {
   brave_sync::GetRecordsCallback on_get_records =
     base::BindRepeating(&Syncer::OnGetRecords, AsWeakPtr());
   base::WaitableEvent wevent;
-  for (auto& observer : *cycle->context()->listeners())
-    observer.OnPollSyncCycle(on_get_records, &wevent);
+  cycle->delegate()->OnPollSyncCycle(on_get_records, &wevent);
   // Make sure OnGetRecords will be the next task on sync thread
   wevent.Wait();
 }

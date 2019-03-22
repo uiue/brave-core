@@ -1,10 +1,6 @@
 #include "components/sync/engine_impl/get_updates_processor.h"
-namespace sync_pb {
-class ClientToServerResponse;
-}  // namespace sync_pb
 
 namespace syncer {
-class SyncerError;
 namespace {
 SyncerError ApplyBraveRecords(sync_pb::ClientToServerResponse*, ModelTypeSet*,
                               std::unique_ptr<brave_sync::RecordsList>);
@@ -21,6 +17,7 @@ SyncerError ApplyBraveRecords(sync_pb::ClientToServerResponse*, ModelTypeSet*,
 namespace syncer {
 namespace {
 
+using brave_sync::jslib::Bookmark;
 using brave_sync::jslib::SyncRecord;
 using syncable::Id;
 static const char kCacheGuid[] = "IrcjZ2jyzHDV9Io4+zKcXQ==";
@@ -31,19 +28,24 @@ uint64_t GetIndexByOrder(const std::string& record_order) {
   uint64_t index = 0;
   char last_ch = record_order.back();
   bool result = base::StringToUint64(std::string(&last_ch), &index);
+  --index;
+  DCHECK(index >= 0);
   DCHECK(result);
   return index;
 }
 
 void AddBookmarkSpecifics(sync_pb::EntitySpecifics* specifics,
-                          const std::string& title,
-                          const GURL& url) {
+                          const Bookmark& bookmark) {
   DCHECK(specifics);
   sync_pb::BookmarkSpecifics* bm_specifics = specifics->mutable_bookmark();
-  bm_specifics->set_url(url.spec());
-  bm_specifics->set_title(title);
+  bm_specifics->set_url(bookmark.site.location);
+  bm_specifics->set_title(bookmark.site.title);
   bm_specifics->set_creation_time_us(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    TimeToProtoTime(bookmark.site.creationTime));
+      // base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  sync_pb::MetaInfo* meta_info = bm_specifics->add_meta_info();
+  meta_info->set_key("order");
+  meta_info->set_value(bookmark.order);
 }
 
 void AddPermanentBookmarkSpecifics(sync_pb::EntitySpecifics* specifics,
@@ -130,11 +132,11 @@ void AddBookmarkNode(sync_pb::SyncEntity* entity, const SyncRecord* record) {
       std::string(kCacheGuid, base::size(kCacheGuid) - 1));
     Id client_id = Id::CreateFromClientString(record->objectId);
     entity->set_originator_client_item_id(client_id.GetServerId());
+    // TODO(darkdh): migrate to UniquePosition
     entity->set_position_in_parent(GetIndexByOrder(bookmark_record.order));
     entity->set_ctime(TimeToProtoTime(base::Time::Now()));
     entity->set_mtime(TimeToProtoTime(base::Time::Now()));
-    AddBookmarkSpecifics(&specifics, bookmark_record.site.title,
-                         GURL(bookmark_record.site.location));
+    AddBookmarkSpecifics(&specifics, bookmark_record);
     entity->mutable_specifics()->CopyFrom(specifics);
   }
 }

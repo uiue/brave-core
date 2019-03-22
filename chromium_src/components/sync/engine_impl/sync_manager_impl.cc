@@ -3,17 +3,10 @@
 
 namespace syncer {
 
-void SyncManagerImpl::OnNudgeSyncCycle() {
-  for (auto& observer : observers_) {
-    observer.OnNudgeSyncCycle();
-  }
-}
-
-void SyncManagerImpl::OnPollSyncCycle(brave_sync::GetRecordsCallback cb,
-                                      base::WaitableEvent* wevent) {
-  for (auto& observer : observers_) {
-    observer.OnPollSyncCycle(cb, wevent);
-  }
+void SyncManagerImpl::BraveInit(InitArgs* args) {
+  DCHECK(args);
+  scheduler_->SetNudgeAndPollDelegate(args->nudge_sync_cycle_delegate_function,
+                                      args->poll_sync_cycle_delegate_function);
 }
 
 }  // namespace syncer

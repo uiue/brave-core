@@ -1,16 +1,14 @@
 diff --git a/components/sync/engine/sync_manager.h b/components/sync/engine/sync_manager.h
-index 514b05be4efe57ec9ae24c99186455456e56793b..66d2455688df7f98a7ec52dcf7de827128cf9ece 100644
+index 514b05be4efe57ec9ae24c99186455456e56793b..0f2f3456c249aea0738c4d8da45b4ecce52f96d5 100644
 --- a/components/sync/engine/sync_manager.h
 +++ b/components/sync/engine/sync_manager.h
-@@ -185,6 +185,11 @@ class SyncManager {
- 
-     virtual void OnProtocolEvent(const ProtocolEvent& event) = 0;
- 
-+    // TODO(darkdh): passing data later
-+    virtual void OnNudgeSyncCycle() {}
-+    virtual void OnPollSyncCycle(brave_sync::GetRecordsCallback cb,
-+                                 base::WaitableEvent* wevent) {}
+@@ -250,6 +250,9 @@ class SyncManager {
+     // Define the polling intervals. Must not be zero.
+     base::TimeDelta short_poll_interval;
+     base::TimeDelta long_poll_interval;
 +
-    protected:
-     virtual ~Observer();
++    brave_sync::NudgeSyncCycleDelegate nudge_sync_cycle_delegate_function;
++    brave_sync::PollSyncCycleDelegate poll_sync_cycle_delegate_function;
    };
+ 
+   // The state of sync the feature. If the user turned on sync explicitly, it

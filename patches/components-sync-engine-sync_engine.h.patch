@@ -1,12 +1,12 @@
 diff --git a/components/sync/engine/sync_engine.h b/components/sync/engine/sync_engine.h
-index 826cc5072e20b1760a64e8edca2933e83f797730..89c0e174bbf8e481495909db8b4bb76b431c2af9 100644
+index 826cc5072e20b1760a64e8edca2933e83f797730..0a3187d2ae99e3f8b5e60ac289891a1d8b8112bd 100644
 --- a/components/sync/engine/sync_engine.h
 +++ b/components/sync/engine/sync_engine.h
 @@ -82,6 +82,8 @@ class SyncEngine : public ModelTypeConfigurer {
      // Define the polling intervals. Must not be zero.
      base::TimeDelta short_poll_interval;
      base::TimeDelta long_poll_interval;
-+    base::Closure nudge_sync_cycle_delegate_function;
++    brave_sync::NudgeSyncCycleDelegate nudge_sync_cycle_delegate_function;
 +    brave_sync::PollSyncCycleDelegate poll_sync_cycle_delegate_function;
  
     private:

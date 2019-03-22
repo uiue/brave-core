@@ -1,5 +1,5 @@
 diff --git a/components/browser_sync/profile_sync_service.h b/components/browser_sync/profile_sync_service.h
-index 74818b55931cf9896bf781b598a27d04962714cf..fc2e02b6e49a2458a9e9f3fae2752b3839d59b56 100644
+index 74818b55931cf9896bf781b598a27d04962714cf..1da0f20a01cb58d09bcf78a6532a03d3e3f63167 100644
 --- a/components/browser_sync/profile_sync_service.h
 +++ b/components/browser_sync/profile_sync_service.h
 @@ -138,7 +138,9 @@ class ProfileSyncService : public syncer::SyncService,
@@ -64,7 +64,7 @@ index 74818b55931cf9896bf781b598a27d04962714cf..fc2e02b6e49a2458a9e9f3fae2752b38
 +  bool IsBraveSyncEnabled() const;
 +  void BraveSyncSetup();
 +  void BraveEngineParamsInit(syncer::SyncEngine::InitParams*);
-+  void OnNudgeSyncCycle(); 
++  void OnNudgeSyncCycle(brave_sync::RecordsListPtr records_list);
 +  void OnPollSyncCycle(brave_sync::GetRecordsCallback cb,
 +                       base::WaitableEvent* wevent);
 +  void FetchSyncRecords(const bool bookmarks, const bool history,

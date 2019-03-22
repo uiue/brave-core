@@ -1,18 +1,8 @@
 diff --git a/components/sync/driver/glue/sync_backend_host_core.h b/components/sync/driver/glue/sync_backend_host_core.h
-index dced9de5a2081185acb22c900e69e90080e54cdf..5d614f7a072b227bc9f40a55c207058384a19a51 100644
+index dced9de5a2081185acb22c900e69e90080e54cdf..0f4b0822bb819c0b505eab58d7ea503e39490d4d 100644
 --- a/components/sync/driver/glue/sync_backend_host_core.h
 +++ b/components/sync/driver/glue/sync_backend_host_core.h
-@@ -59,6 +59,9 @@ class SyncBackendHostCore
-   void OnActionableError(const SyncProtocolError& sync_error) override;
-   void OnMigrationRequested(ModelTypeSet types) override;
-   void OnProtocolEvent(const ProtocolEvent& event) override;
-+  void OnNudgeSyncCycle() override;
-+  void OnPollSyncCycle(GetRecordsCallback cb,
-+                       base::WaitableEvent* wevent) override;
- 
-   // TypeDebugInfoObserver implementation
-   void OnCommitCountersUpdated(ModelType type,
-@@ -176,6 +179,9 @@ class SyncBackendHostCore
+@@ -176,11 +176,19 @@ class SyncBackendHostCore
  
    bool HasUnsyncedItemsForTest() const;
  
@@ -22,3 +12,13 @@ index dced9de5a2081185acb22c900e69e90080e54cdf..5d614f7a072b227bc9f40a55c2070583
   private:
    friend class base::RefCountedThreadSafe<SyncBackendHostCore>;
  
+   ~SyncBackendHostCore() override;
+ 
++  void OnNudgeSyncCycle(brave_sync::RecordsListPtr records_list);
++  void OnPollSyncCycle(GetRecordsCallback cb,
++                       base::WaitableEvent* wevent);
++  void BraveInit(SyncManager::InitArgs* args);
++
+   // Invoked when initialization of syncapi is complete and we can start
+   // our timer.
+   // This must be called from the thread on which SaveChanges is intended to

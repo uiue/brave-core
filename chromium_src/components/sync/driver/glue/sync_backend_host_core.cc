@@ -4,9 +4,11 @@
 
 namespace syncer {
 
-void SyncBackendHostCore::OnNudgeSyncCycle() {
+void SyncBackendHostCore::OnNudgeSyncCycle(
+    brave_sync::RecordsListPtr records_list) {
   host_.Call(FROM_HERE,
-             &SyncBackendHostImpl::HandleNudgeSyncCycle);
+             &SyncBackendHostImpl::HandleNudgeSyncCycle,
+             base::Passed(&records_list));
 }
 
 void SyncBackendHostCore::OnPollSyncCycle(GetRecordsCallback cb,
@@ -18,6 +20,16 @@ void SyncBackendHostCore::OnPollSyncCycle(GetRecordsCallback cb,
 void SyncBackendHostCore::DoDispatchGetRecordsCallback(
     GetRecordsCallback cb, std::unique_ptr<RecordsList> records) {
   cb.Run(std::move(records));
+}
+
+void SyncBackendHostCore::BraveInit(SyncManager::InitArgs* args) {
+  DCHECK(args);
+  args->nudge_sync_cycle_delegate_function =
+    base::BindRepeating(&SyncBackendHostCore::OnNudgeSyncCycle,
+                        weak_ptr_factory_.GetWeakPtr());
+  args->poll_sync_cycle_delegate_function =
+    base::BindRepeating(&SyncBackendHostCore::OnPollSyncCycle,
+                        weak_ptr_factory_.GetWeakPtr());
 }
 
 }  // namespace syncer
