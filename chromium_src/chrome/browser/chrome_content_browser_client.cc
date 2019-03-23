@@ -19,7 +19,8 @@
 
 #if defined(OS_LINUX)
 #include "brave/browser/ui/views/brave_browser_main_extra_parts_views_linux.h"
-#define ChromeBrowserMainExtraPartsViewsLinux BraveBrowserMainExtraPartsViewsLinux
+#define ChromeBrowserMainExtraPartsViewsLinux
+    BraveBrowserMainExtraPartsViewsLinux
 #endif
 
 #define HandleNewTabURLRewrite HandleNewTabURLRewrite_ChromiumImpl
@@ -34,7 +35,7 @@ namespace search {
   }
 }  // namespace search
 
-#include "../../../../chrome/browser/chrome_content_browser_client.cc"
+#include "../../../../chrome/browser/chrome_content_browser_client.cc"  // NOLINT
 
 #undef HandleNewTabURLRewrite
 #undef HandleNewTabURLReverseRewrite_ChromiumImpl
