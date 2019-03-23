@@ -21,10 +21,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 
-#if BUILDFLAG(BRAVE_STP_ENABLED)
-#include "brave/common/brave_switches.h"
-#endif
-
 using extensions::ExtensionBrowserTest;
 
 const char kTrackingPage[] = "/tracking.html";
@@ -169,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionServiceTest, TrackerReferencedFromUntru
 IN_PROC_BROWSER_TEST_F(TrackingProtectionServiceTest, StorageTrackingBlocked) {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-  if (!command_line.HasSwitch(switches::kEnableSmartTrackingProtection)) {
+  if (!TrackingProtectionHelper::IsSmartTrackingProtectionEnabled()) {
     return;
   }
   ASSERT_TRUE(InstallTrackingProtectionExtension());
@@ -196,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionServiceTest, StorageTrackingBlocked) {
 IN_PROC_BROWSER_TEST_F(TrackingProtectionServiceTest, StorageTrackingAllowed) {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-  if (!command_line.HasSwitch(switches::kEnableSmartTrackingProtection)) {
+  if (!TrackingProtectionHelper::IsSmartTrackingProtectionEnabled()) {
     return;
   }
   ASSERT_TRUE(InstallTrackingProtectionExtension());

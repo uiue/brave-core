@@ -3,6 +3,7 @@
 #include "brave/components/brave_shields/browser/tracking_protection_helper.h"
 
 #include "brave/browser/brave_browser_process_impl.h"
+#include "brave/common/brave_switches.h"
 #include "brave/components/brave_shields/browser/tracking_protection_service.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "content/public/browser/navigation_handle.h"
@@ -16,8 +17,13 @@ using content::WebContents;
 
 namespace brave_shields {
 
-TrackingProtectionHelper::TrackingProtectionHelper(WebContents*
-  web_contents)
+bool TrackingProtectionHelper::IsSmartTrackingProtectionEnabled() {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  return command_line.HasSwitch(switches::kEnableSmartTrackingProtection);
+}
+
+TrackingProtectionHelper::TrackingProtectionHelper(WebContents* web_contents)
     : WebContentsObserver(web_contents) {
 }
 
@@ -30,7 +36,8 @@ void TrackingProtectionHelper::DidStartNavigation(NavigationHandle* handle) {
   if (!ui::PageTransitionIsRedirect(handle->GetPageTransition())) {
     g_brave_browser_process->tracking_protection_service()->
       SetStartingSiteForRenderFrame(handle->GetURL(),
-        rfh->GetProcess()->GetID(), rfh->GetRoutingID());
+                                    rfh->GetProcess()->GetID(),
+                                    rfh->GetRoutingID());
   }
   return;
 }
@@ -44,15 +51,16 @@ void TrackingProtectionHelper::RenderFrameDeleted(RenderFrameHost*
 
 void TrackingProtectionHelper::RenderFrameHostChanged(
     RenderFrameHost* old_host, RenderFrameHost* new_host) {
-  if (!old_host || old_host->GetParent() ||
-      new_host->GetParent()) {
+  if (!old_host || old_host->GetParent() || new_host->GetParent()) {
     return;
   }
 
   g_brave_browser_process->tracking_protection_service()->
-    ModifyRenderFrameKey(old_host->GetProcess()->GetID(),
-    old_host->GetRoutingID(), new_host->GetProcess()->GetID(),
-    new_host->GetRoutingID());
+    ModifyRenderFrameKey(
+      old_host->GetProcess()->GetID(),
+      old_host->GetRoutingID(),
+      new_host->GetProcess()->GetID(),
+      new_host->GetRoutingID());
 }
 
 }  // namespace brave_shields

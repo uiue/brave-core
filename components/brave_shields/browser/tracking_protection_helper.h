@@ -27,6 +27,7 @@ class TrackingProtectionHelper : public content::WebContentsObserver,
                               content::RenderFrameHost* new_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host)
     override;
+  static bool IsSmartTrackingProtectionEnabled();
 
   DISALLOW_COPY_AND_ASSIGN(TrackingProtectionHelper);
 };

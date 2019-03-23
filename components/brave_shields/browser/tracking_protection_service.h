@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -26,13 +27,8 @@
 #include "content/public/common/resource_type.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(BRAVE_STP_ENABLED)
-#include "base/containers/flat_set.h"
-
-class HostContentSettingsMap;
-#endif
-
 class CTPParser;
+class HostContentSettingsMap;
 class TrackingProtectionServiceTest;
 
 namespace brave_shields {
@@ -57,16 +53,20 @@ class TrackingProtectionService : public BaseLocalDataFilesObserver {
 
 #if BUILDFLAG(BRAVE_STP_ENABLED)
   bool ShouldStoreState(HostContentSettingsMap* map,
-    int render_process_id, int render_frame_id, const GURL& top_origin_url,
-    const GURL& origin_url);
+                        int render_process_id,
+                        int render_frame_id,
+                        const GURL& top_origin_url,
+                        const GURL& origin_url);
 
   void SetStartingSiteForRenderFrame(GURL starting_site, int render_process_id,
     int render_frame_id);
   GURL GetStartingSiteForRenderFrame(int render_process_id,
     int render_frame_id);
   void DeleteRenderFrameKey(int render_process_id, int render_frame_id);
-  void ModifyRenderFrameKey(int old_render_process_id, int old_render_frame_id,
-    int new_render_process_id, int new_render_frame_id);
+  void ModifyRenderFrameKey(int old_render_process_id,
+                            int old_render_frame_id,
+                            int new_render_process_id,
+                            int new_render_frame_id);
 #endif
 
  protected:

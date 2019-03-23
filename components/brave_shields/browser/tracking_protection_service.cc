@@ -29,26 +29,21 @@
 #include "brave/common/brave_switches.h"
 #include "brave/components/brave_shields/browser/brave_shields_util.h"
 #include "brave/components/brave_shields/browser/brave_shields_web_contents_observer.h"
+#include "brave/components/brave_shields/browser/tracking_protection_helper.h"
 #include "brave/components/brave_shields/common/brave_shield_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
-
-#define STORAGE_TRACKERS_FILE "StorageTrackingProtection.dat"
-#endif
-
-#define NAVIGATION_TRACKERS_FILE "TrackingProtection.dat"
-#define DAT_FILE_VERSION "1"
-#define THIRD_PARTY_HOSTS_CACHE_SIZE 20
-
-#if BUILDFLAG(BRAVE_STP_ENABLED)
-using content::BrowserThread;
-using content::RenderFrameHost;
 #endif
 
 namespace brave_shields {
+
+const char kStorageTrackersFile[] = "StorageTrackingProtection.dat";
+const char kNavigationTrackersFile[] = "TrackingProtection.dat";
+const char kDatFileVersion[] = "1";
+const int kThirdPartyHostsCacheSize = 20;
 
 TrackingProtectionService::TrackingProtectionService()
   : tracking_protection_client_(new CTPParser()),
@@ -84,15 +79,17 @@ bool TrackingProtectionService::RenderFrameIdKey::operator==(
 }
 
 void TrackingProtectionService::SetStartingSiteForRenderFrame(
-  GURL starting_site, int render_process_id, int render_frame_id) {
+                                                         GURL starting_site,
+                                                         int render_process_id,
+                                                         int render_frame_id) {
   base::AutoLock lock(frame_starting_site_map_lock_);
   const RenderFrameIdKey key(render_process_id, render_frame_id);
   auto iter = render_frame_key_to_starting_site_url.find(key);
   if (iter != render_frame_key_to_starting_site_url.end()) {
     render_frame_key_to_starting_site_url.erase(key);
   }
-  render_frame_key_to_starting_site_url.insert(std::pair<RenderFrameIdKey,
-    GURL>(key, starting_site));
+  render_frame_key_to_starting_site_url.insert(
+    std::pair<RenderFrameIdKey, GURL>(key, starting_site));
   return;
 }
 
@@ -107,9 +104,10 @@ GURL TrackingProtectionService::GetStartingSiteForRenderFrame(
   return GURL();
 }
 
-void TrackingProtectionService::ModifyRenderFrameKey(
-  int old_render_process_id, int old_render_frame_id,
-  int new_render_process_id, int new_render_frame_id) {
+void TrackingProtectionService::ModifyRenderFrameKey(int old_render_process_id,
+                                                     int old_render_frame_id,
+                                                     int new_render_process_id,
+                                                     int new_render_frame_id) {
   base::AutoLock lock(frame_starting_site_map_lock_);
   const RenderFrameIdKey old_key(old_render_process_id, old_render_frame_id);
   auto iter =
@@ -165,12 +163,12 @@ bool TrackingProtectionService::ShouldStartRequest(const GURL& url,
   return false;
 }
 
-bool TrackingProtectionService::ShouldStoreState(HostContentSettingsMap* map, 
-  int render_process_id, int render_frame_id, const GURL& top_origin_url, 
-  const GURL& origin_url) {
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  if (!command_line.HasSwitch(switches::kEnableSmartTrackingProtection)) {
+bool TrackingProtectionService::ShouldStoreState(HostContentSettingsMap* map,
+                                                 int render_process_id,
+                                                 int render_frame_id,
+                                                 const GURL& top_origin_url,
+                                                 const GURL& origin_url) {
+  if (!TrackingProtectionHelper::IsSmartTrackingProtectionEnabled()) {
     return true;
   }
 
@@ -252,8 +250,8 @@ void TrackingProtectionService::OnComponentReady(
     const base::FilePath& install_dir,
     const std::string& manifest) {
   base::FilePath navigation_tracking_protection_path =
-      install_dir.AppendASCII(DAT_FILE_VERSION).AppendASCII(
-        NAVIGATION_TRACKERS_FILE);
+      install_dir.AppendASCII(kDatFileVersion).AppendASCII(
+        kNavigationTrackersFile);
 
   GetTaskRunner()->PostTaskAndReply(
       FROM_HERE,
@@ -264,8 +262,8 @@ void TrackingProtectionService::OnComponentReady(
 
 #if BUILDFLAG(BRAVE_STP_ENABLED)
   base::FilePath storage_tracking_protection_path =
-      install_dir.AppendASCII(DAT_FILE_VERSION).AppendASCII(
-        STORAGE_TRACKERS_FILE);
+      install_dir.AppendASCII(kDatFileVersion).AppendASCII(
+        kStorageTrackersFile);
 
   GetTaskRunner()->PostTaskAndReply(
       FROM_HERE,
@@ -319,8 +317,8 @@ TrackingProtectionService::GetThirdPartyHosts(const std::string& base_host) {
 
   {
     std::lock_guard<std::mutex> guard(third_party_hosts_mutex_);
-    if (third_party_hosts_cache_.size() == THIRD_PARTY_HOSTS_CACHE_SIZE &&
-        third_party_base_hosts_.size() == THIRD_PARTY_HOSTS_CACHE_SIZE) {
+    if (third_party_hosts_cache_.size() == kThirdPartyHostsCacheSize &&
+        third_party_base_hosts_.size() == kThirdPartyHostsCacheSize) {
       third_party_hosts_cache_.erase(third_party_base_hosts_[0]);
       third_party_base_hosts_.erase(third_party_base_hosts_.begin());
     }

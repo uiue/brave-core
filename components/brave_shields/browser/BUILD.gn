@@ -1,8 +1,8 @@
-import("//brave/browser/renderer_host/buildflags/buildflags.gni")
+import("//brave/components/brave_shields/browser/buildflags/buildflags.gni")
 
 source_set("brave_shields") {
   public_deps = [
-    "//brave/browser/renderer_host/buildflags",
+    "buildflags",
   ]
 
   sources = [

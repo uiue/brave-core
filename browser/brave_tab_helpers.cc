@@ -15,6 +15,8 @@
 #endif
 #if BUILDFLAG(BRAVE_STP_ENABLED)
 #include "brave/components/brave_shields/browser/tracking_protection_helper.h"
+
+using brave_shields::TrackingProtectionHelper;
 #endif
 // Add tab helpers here unless they are intended for android too
 #endif
@@ -31,8 +33,9 @@ void AttachTabHelpers(content::WebContents* web_contents) {
   // Add tab helpers here unless they are intended for android too
   BraveDrmTabHelper::CreateForWebContents(web_contents);
 #if BUILDFLAG(BRAVE_STP_ENABLED)
-  brave_shields::TrackingProtectionHelper::CreateForWebContents(
-      web_contents);
+  if (TrackingProtectionHelper::IsSmartTrackingProtectionEnabled()) {
+  	brave_shields::TrackingProtectionHelper::CreateForWebContents(web_contents);
+  }
 #endif
 #endif
 
