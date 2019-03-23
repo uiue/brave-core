@@ -1,6 +1,4 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this file,
- * You can obtain one at http://mozilla.org/MPL/2.0/. */
+// Copyright (c) 2019 The Brave Authors. All rights reserved.
 
 #ifndef BRAVE_COMPONENTS_BRAVE_SHIELDS_BROWSER_TRACKING_PROTECTION_HELPER_H_
 #define BRAVE_COMPONENTS_BRAVE_SHIELDS_BROWSER_TRACKING_PROTECTION_HELPER_H_
@@ -20,15 +18,15 @@ namespace brave_shields {
 
 class TrackingProtectionHelper : public content::WebContentsObserver,
   public content::WebContentsUserData<TrackingProtectionHelper> {
-  public:
-    TrackingProtectionHelper(content::WebContents*);
-    ~TrackingProtectionHelper() override;
-    void DidStartNavigation(content::NavigationHandle* 
-      navigation_handle) override;
-    void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+ public:
+  explicit TrackingProtectionHelper(content::WebContents*);
+  ~TrackingProtectionHelper() override;
+  void DidStartNavigation(content::NavigationHandle*
+    navigation_handle) override;
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
-    void RenderFrameDeleted(content::RenderFrameHost* render_frame_host)
-      override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host)
+    override;
 
   DISALLOW_COPY_AND_ASSIGN(TrackingProtectionHelper);
 };

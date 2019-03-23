@@ -1,7 +1,4 @@
-/* Copyright (c) 2019 The Brave Authors. All rights reserved.
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this file,
- * You can obtain one at http://mozilla.org/MPL/2.0/. */
+// Copyright (c) 2019 The Brave Authors. All rights reserved.
 
 #include "brave/browser/brave_content_browser_client.h"
 
@@ -14,7 +11,7 @@
 #include "brave/browser/brave_browser_main_extra_parts.h"
 #include "brave/browser/brave_browser_process_impl.h"
 #include "brave/browser/extensions/brave_tor_client_updater.h"
-#include "brave/browser/renderer_host/buildflags/buildflags.h" // For STP
+#include "brave/browser/renderer_host/buildflags/buildflags.h"  // For STP
 #include "brave/browser/renderer_host/brave_navigation_ui_data.h"
 #include "brave/browser/tor/tor_profile_service_factory.h"
 #include "brave/common/brave_cookie_blocking.h"
@@ -209,7 +206,8 @@ BraveContentBrowserClient::AllowWebBluetooth(
     content::BrowserContext* browser_context,
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {
-  return ContentBrowserClient::AllowWebBluetoothResult::BLOCK_GLOBALLY_DISABLED;
+  return content::ContentBrowserClient::AllowWebBluetoothResult
+    ::BLOCK_GLOBALLY_DISABLED;
 }
 
 bool BraveContentBrowserClient::HandleExternalProtocol(

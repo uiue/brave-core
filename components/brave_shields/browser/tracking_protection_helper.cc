@@ -1,6 +1,4 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this file,
- * You can obtain one at http://mozilla.org/MPL/2.0/. */
+// Copyright (c) 2019 The Brave Authors. All rights reserved.
 
 #include "brave/components/brave_shields/browser/tracking_protection_helper.h"
 
@@ -27,7 +25,7 @@ TrackingProtectionHelper::~TrackingProtectionHelper() {
 }
 
 void TrackingProtectionHelper::DidStartNavigation(NavigationHandle* handle) {
-  RenderFrameHost *rfh = web_contents()->GetMainFrame();
+  RenderFrameHost* rfh = web_contents()->GetMainFrame();
 
   if (!ui::PageTransitionIsRedirect(handle->GetPageTransition())) {
     g_brave_browser_process->tracking_protection_service()->
@@ -37,7 +35,7 @@ void TrackingProtectionHelper::DidStartNavigation(NavigationHandle* handle) {
   return;
 }
 
-void TrackingProtectionHelper::RenderFrameDeleted(RenderFrameHost* 
+void TrackingProtectionHelper::RenderFrameDeleted(RenderFrameHost*
   render_frame_host) {
   g_brave_browser_process->tracking_protection_service()->
     DeleteRenderFrameKey(render_frame_host->GetProcess()->GetID(),

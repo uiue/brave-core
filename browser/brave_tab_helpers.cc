@@ -1,11 +1,9 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this file,
- * You can obtain one at http://mozilla.org/MPL/2.0/. */
+// Copyright (c) 2019 The Brave Authors. All rights reserved.
 
 #include "brave/browser/brave_tab_helpers.h"
 
 #include "brave/browser/brave_drm_tab_helper.h"
-#include "brave/browser/renderer_host/buildflags/buildflags.h" // For STP
+#include "brave/browser/renderer_host/buildflags/buildflags.h"  // For STP
 #include "brave/components/brave_ads/browser/ads_tab_helper.h"
 #include "brave/components/brave_rewards/browser/buildflags/buildflags.h"
 #include "content/public/browser/web_contents.h"

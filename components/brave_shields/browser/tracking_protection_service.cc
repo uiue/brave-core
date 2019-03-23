@@ -10,7 +10,7 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
-#include "brave/browser/renderer_host/buildflags/buildflags.h" //For STP
+#include "brave/browser/renderer_host/buildflags/buildflags.h"  // For STP
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -180,7 +180,7 @@ bool TrackingProtectionService::ShouldStoreState(HostContentSettingsMap* map,
     return true;
   }
 
-  if(first_party_storage_trackers_.empty()) {
+  if (first_party_storage_trackers_.empty()) {
     LOG(INFO) << "First party storage trackers list is empty";
     return true;
   }
@@ -196,8 +196,8 @@ bool TrackingProtectionService::ShouldStoreState(HostContentSettingsMap* map,
     return true;
   }
 
-  bool allow_brave_shields = starting_site == GURL() ? false : 
-    IsAllowContentSetting(map, starting_site, GURL(), 
+  bool allow_brave_shields = starting_site == GURL() ? false :
+    IsAllowContentSetting(map, starting_site, GURL(),
       CONTENT_SETTINGS_TYPE_PLUGINS, brave_shields::kBraveShields);
 
   if (!allow_brave_shields) {
@@ -205,7 +205,7 @@ bool TrackingProtectionService::ShouldStoreState(HostContentSettingsMap* map,
   }
 
   bool allow_trackers = starting_site == GURL() ? true : IsAllowContentSetting(
-      map, starting_site, GURL(), CONTENT_SETTINGS_TYPE_PLUGINS, 
+      map, starting_site, GURL(), CONTENT_SETTINGS_TYPE_PLUGINS,
       brave_shields::kTrackers);
 
   if (allow_trackers) {
@@ -213,8 +213,8 @@ bool TrackingProtectionService::ShouldStoreState(HostContentSettingsMap* map,
   }
 
   // deny storage if host is not found in the tracker list
-  return !(std::find(first_party_storage_trackers_.begin(), 
-    first_party_storage_trackers_.end(), host) 
+  return !(std::find(first_party_storage_trackers_.begin(),
+    first_party_storage_trackers_.end(), host)
     != first_party_storage_trackers_.end());
 }
 
@@ -230,7 +230,7 @@ void TrackingProtectionService::ParseStorageTrackersData() {
     base::StringPiece(trackers.data(), trackers.size()), ",",
     base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  if(first_party_storage_trackers_.empty()) {
+  if (first_party_storage_trackers_.empty()) {
     LOG(ERROR) << "No first party trackers found";
     return;
   }
@@ -261,7 +261,8 @@ void TrackingProtectionService::OnComponentReady(
 
   GetTaskRunner()->PostTaskAndReply(
       FROM_HERE,
-      base::Bind(&GetDATFileData, navigation_tracking_protection_path, &buffer_),
+      base::Bind(&GetDATFileData, navigation_tracking_protection_path,
+        &buffer_),
       base::Bind(&TrackingProtectionService::OnDATFileDataReady,
                  weak_factory_.GetWeakPtr()));
 

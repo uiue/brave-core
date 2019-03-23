@@ -1,6 +1,4 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this file,
- * You can obtain one at http://mozilla.org/MPL/2.0/. */
+// Copyright (c) 2019 The Brave Authors. All rights reserved.
 
 #ifndef BRAVE_BROWSER_RENDERER_HOST_BRAVE_RENDER_MESSAGE_FILTER_H_
 #define BRAVE_BROWSER_RENDERER_HOST_BRAVE_RENDER_MESSAGE_FILTER_H_
@@ -15,9 +13,9 @@ class BraveRenderMessageFilter : public ChromeRenderMessageFilter {
   using ChromeRenderMessageFilter::ChromeRenderMessageFilter;
   BraveRenderMessageFilter(int render_process_id, Profile* profile);
   bool OnMessageReceived(const IPC::Message& message) override;
-  
+
  private:
-  friend class base::DeleteHelper<BraveRenderMessageFilter>; 
+  friend class base::DeleteHelper<BraveRenderMessageFilter>;
 
   ~BraveRenderMessageFilter() override;
 
@@ -39,7 +37,7 @@ class BraveRenderMessageFilter : public ChromeRenderMessageFilter {
                         const GURL& top_origin_url,
                         bool* allowed);
 
-  HostContentSettingsMap *host_content_settings_map_;
+  HostContentSettingsMap* host_content_settings_map_;
   DISALLOW_COPY_AND_ASSIGN(BraveRenderMessageFilter);
 };
 

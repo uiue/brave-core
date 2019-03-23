@@ -1,6 +1,4 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this file,
- * You can obtain one at http://mozilla.org/MPL/2.0/. */
+// Copyright (c) 2019 The Brave Authors. All rights reserved.
 
 #include "brave/browser/renderer_host/brave_render_message_filter.h"
 
@@ -12,11 +10,11 @@
 #include "chrome/common/render_messages.h"
 #include "content/public/browser/browser_task_traits.h"
 
-BraveRenderMessageFilter::BraveRenderMessageFilter(int render_process_id, 
-	Profile* profile)
-	: ChromeRenderMessageFilter(render_process_id, profile),
-	  host_content_settings_map_(HostContentSettingsMapFactory::
-      GetForProfile(profile)) {
+BraveRenderMessageFilter::BraveRenderMessageFilter(int render_process_id,
+  Profile* profile)
+  : ChromeRenderMessageFilter(render_process_id, profile),
+    host_content_settings_map_(HostContentSettingsMapFactory::GetForProfile(
+      profile)) {
 }
 
 BraveRenderMessageFilter::~BraveRenderMessageFilter() {}

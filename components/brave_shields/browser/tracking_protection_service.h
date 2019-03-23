@@ -20,7 +20,7 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "brave/components/brave_shields/browser/base_local_data_files_observer.h"
-#include "brave/browser/renderer_host/buildflags/buildflags.h" //For STP
+#include "brave/browser/renderer_host/buildflags/buildflags.h"  // For STP
 #include "brave/components/brave_shields/browser/base_brave_shields_service.h"
 #include "brave/components/brave_shields/browser/dat_file_util.h"
 #include "content/public/common/resource_type.h"
@@ -54,11 +54,9 @@ class TrackingProtectionService : public BaseLocalDataFilesObserver {
                         const std::string& manifest) override;
 
 #if BUILDFLAG(BRAVE_STP_ENABLED)
-  bool ShouldStoreState(HostContentSettingsMap* map, 
-    int render_process_id, int render_frame_id, const GURL& top_origin_url, 
+  bool ShouldStoreState(HostContentSettingsMap* map,
+    int render_process_id, int render_frame_id, const GURL& top_origin_url,
     const GURL& origin_url);
-  void DispatchBlockedEvent(int render_process_id, int render_frame_id, 
-    const GURL& request_url);
 
   void SetStartingSiteForRenderFrame(GURL starting_site, int render_process_id,
     int render_frame_id);
@@ -68,7 +66,7 @@ class TrackingProtectionService : public BaseLocalDataFilesObserver {
   void ModifyRenderFrameKey(int old_render_process_id, int old_render_frame_id,
     int new_render_process_id, int new_render_frame_id);
 #endif
-  
+
  protected:
 #if BUILDFLAG(BRAVE_STP_ENABLED)
   void ParseStorageTrackersData();
