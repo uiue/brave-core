@@ -29,9 +29,9 @@ void AttachTabHelpers(content::WebContents* web_contents) {
 #endif
   // Add tab helpers here unless they are intended for android too
   BraveDrmTabHelper::CreateForWebContents(web_contents);
-#endif
   brave_shields::TrackingProtectionHelper::CreateForWebContents(
       web_contents);
+#endif
   brave_ads::AdsTabHelper::CreateForWebContents(web_contents);
 }
 

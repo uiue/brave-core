@@ -4,11 +4,13 @@
 
 #include "brave/browser/renderer_host/brave_render_message_filter.h"
 
+#include "base/task/post_task.h"
 #include "brave/browser/brave_browser_process_impl.h"
 #include "brave/components/brave_shields/browser/tracking_protection_service.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/render_messages.h"
+#include "content/public/browser/browser_task_traits.h"
 
 BraveRenderMessageFilter::BraveRenderMessageFilter(int render_process_id, 
 	Profile* profile)
@@ -40,46 +42,47 @@ void BraveRenderMessageFilter::OnAllowDatabase(int render_frame_id,
   CHECK(g_brave_browser_process->tracking_protection_service()->
     IsInitialized());
   *allowed = g_brave_browser_process->tracking_protection_service()->
-    ShouldStoreState(host_content_settings_map_, render_process_id_, 
+    ShouldStoreState(host_content_settings_map_, render_process_id_,
       render_frame_id, origin_url, top_origin_url);
 
   if (*allowed) {
-    ChromeRenderMessageFilter::OnAllowDatabase(render_frame_id, origin_url, 
+    ChromeRenderMessageFilter::OnAllowDatabase(render_frame_id, origin_url,
       top_origin_url, name, display_name, allowed);
   }
+  return;
 }
 
 void BraveRenderMessageFilter::OnAllowDOMStorage(int render_frame_id,
-                                                  const GURL& origin_url,
-                                                  const GURL& top_origin_url,
-                                                  bool local,
-                                                  bool* allowed) {
+               const GURL& origin_url,
+               const GURL& top_origin_url,
+               bool local,
+               bool* allowed) {
   CHECK(g_brave_browser_process->tracking_protection_service()->
     IsInitialized());
   *allowed = g_brave_browser_process->tracking_protection_service()->
-    ShouldStoreState(host_content_settings_map_, render_process_id_, 
+    ShouldStoreState(host_content_settings_map_, render_process_id_,
       render_frame_id, origin_url, top_origin_url);
 
   if (*allowed) {
-    ChromeRenderMessageFilter::OnAllowDOMStorage(render_frame_id, origin_url, 
+    ChromeRenderMessageFilter::OnAllowDOMStorage(render_frame_id, origin_url,
       top_origin_url, local, allowed);
   }
-     
+  return;
 }
 
 void BraveRenderMessageFilter::OnAllowIndexedDB(int render_frame_id,
-                                                 const GURL& origin_url,
-                                                 const GURL& top_origin_url,
-                                                 const base::string16& name,
-                                                 bool* allowed) {
+               const GURL& origin_url,
+               const GURL& top_origin_url,
+               bool* allowed) {
   CHECK(g_brave_browser_process->tracking_protection_service()->
     IsInitialized());
   *allowed = g_brave_browser_process->tracking_protection_service()->
-    ShouldStoreState(host_content_settings_map_, render_process_id_, 
+    ShouldStoreState(host_content_settings_map_, render_process_id_,
       render_frame_id, origin_url, top_origin_url);
 
   if (*allowed) {
-    ChromeRenderMessageFilter::OnAllowIndexedDB(render_frame_id, origin_url, 
-      top_origin_url, name, allowed);
+    ChromeRenderMessageFilter::OnAllowIndexedDB(render_frame_id, origin_url,
+      top_origin_url, allowed);
   }
+  return;
 }

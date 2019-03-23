@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "brave/browser/brave_browser_process_impl.h"
@@ -22,10 +23,10 @@
 #include "brave/components/brave_shields/browser/brave_shields_util.h"
 #include "brave/components/brave_shields/browser/brave_shields_web_contents_observer.h"
 #include "brave/components/brave_shields/browser/dat_file_util.h"
-#include "brave/components/brave_shields/browser/tracking_protection_helper.h"
 #include "brave/components/brave_shields/common/brave_shield_constants.h"
 #include "brave/vendor/tracking-protection/TPParser.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -48,6 +49,80 @@ TrackingProtectionService::TrackingProtectionService()
 
 TrackingProtectionService::~TrackingProtectionService() {
   tracking_protection_client_.reset();
+}
+
+TrackingProtectionService::RenderFrameIdKey::RenderFrameIdKey()
+    : render_process_id(content::ChildProcessHost::kInvalidUniqueID),
+      frame_routing_id(MSG_ROUTING_NONE) {}
+
+TrackingProtectionService::RenderFrameIdKey::RenderFrameIdKey(
+    int render_process_id,
+    int frame_routing_id)
+    : render_process_id(render_process_id),
+      frame_routing_id(frame_routing_id) {}
+
+bool TrackingProtectionService::RenderFrameIdKey::operator<(
+    const RenderFrameIdKey& other) const {
+  return std::tie(render_process_id, frame_routing_id) <
+         std::tie(other.render_process_id, other.frame_routing_id);
+}
+
+bool TrackingProtectionService::RenderFrameIdKey::operator==(
+    const RenderFrameIdKey& other) const {
+  return render_process_id == other.render_process_id &&
+         frame_routing_id == other.frame_routing_id;
+}
+
+void TrackingProtectionService::SetStartingSiteForRenderFrame(
+  GURL starting_site, int render_process_id, int render_frame_id) {
+  base::AutoLock lock(frame_starting_site_map_lock_);
+  const RenderFrameIdKey key(render_process_id, render_frame_id);
+  std::map<RenderFrameIdKey, GURL>::iterator iter =
+      render_frame_key_to_starting_site_url.find(key);
+  if (iter != render_frame_key_to_starting_site_url.end()) {
+    render_frame_key_to_starting_site_url.erase(key);
+  }
+  render_frame_key_to_starting_site_url.insert(std::pair<RenderFrameIdKey,
+    GURL>(key, starting_site));
+  return;
+}
+
+GURL TrackingProtectionService::GetStartingSiteForRenderFrame(
+  int render_process_id, int render_frame_id) {
+  base::AutoLock lock(frame_starting_site_map_lock_);
+  const RenderFrameIdKey key(render_process_id, render_frame_id);
+  std::map<RenderFrameIdKey, GURL>::iterator iter =
+      render_frame_key_to_starting_site_url.find(key);
+  if (iter != render_frame_key_to_starting_site_url.end()) {
+    return iter->second;
+  }
+  return GURL();
+}
+
+void TrackingProtectionService::ModifyRenderFrameKey(
+  int old_render_process_id, int old_render_frame_id,
+  int new_render_process_id, int new_render_frame_id) {
+  base::AutoLock lock(frame_starting_site_map_lock_);
+  const RenderFrameIdKey old_key(old_render_process_id, old_render_frame_id);
+  std::map<RenderFrameIdKey, GURL>::iterator iter =
+      render_frame_key_to_starting_site_url.find(old_key);
+  if (iter != render_frame_key_to_starting_site_url.end()) {
+    const RenderFrameIdKey new_key(new_render_process_id, new_render_frame_id);
+    render_frame_key_to_starting_site_url.insert(
+        std::pair<RenderFrameIdKey, GURL>(new_key, iter->second));
+    render_frame_key_to_starting_site_url.erase(old_key);
+  }
+}
+
+void TrackingProtectionService::DeleteRenderFrameKey(int render_process_id,
+  int render_frame_id) {
+  base::AutoLock lock(frame_starting_site_map_lock_);
+  const RenderFrameIdKey key(render_process_id, render_frame_id);
+  std::map<RenderFrameIdKey, GURL>::iterator iter =
+      render_frame_key_to_starting_site_url.find(key);
+  if (iter != render_frame_key_to_starting_site_url.end()) {
+    render_frame_key_to_starting_site_url.erase(key);
+  }
 }
 
 bool TrackingProtectionService::ShouldStartRequest(const GURL& url,
@@ -100,16 +175,21 @@ void TrackingProtectionService::DispatchBlockedEvent(int render_process_id,
 bool TrackingProtectionService::ShouldStoreState(HostContentSettingsMap* map, 
   int render_process_id, int render_frame_id, const GURL& top_origin_url, 
   const GURL& origin_url) {
-
-  if (!first_party_storage_trackers_initailized_) {
-    LOG(INFO) << "First party storage trackers not initialized";
+  if(first_party_storage_trackers_.empty()) {
+    LOG(INFO) << "First party storage trackers list is empty";
     return true;
-  }  
+  }
+
   std::string host = origin_url.host();
 
-  GURL starting_site = 
-    TrackingProtectionHelper::GetStartingSiteURLFromRenderFrameInfo(
-      render_process_id, render_frame_id);
+  GURL starting_site = GetStartingSiteForRenderFrame(render_process_id,
+    render_frame_id);
+
+  // If starting host is the current host, user-interaction has happened
+  // so we allow storage
+  if (starting_site.host() == host) {
+    return true;
+  }
 
   bool allow_brave_shields = starting_site == GURL() ? false : 
     IsAllowContentSetting(map, starting_site, GURL(), 
@@ -147,20 +227,16 @@ void TrackingProtectionService::ParseStorageTrackersData() {
     return;
   }
 
-  std::stringstream st(std::string(storage_trackers_buffer_.begin(), 
-    storage_trackers_buffer_.end()));
-  std::string tracker;
-
-  while(std::getline(st, tracker, ',')) {
-    first_party_storage_trackers_.push_back(tracker);
-  }
+  std::string trackers(storage_trackers_buffer_.begin(),
+    storage_trackers_buffer_.end());
+  first_party_storage_trackers_ = base::SplitString(
+    base::StringPiece(trackers.data(), trackers.size()), ",",
+    base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   if(first_party_storage_trackers_.empty()) {
     LOG(ERROR) << "No first party trackers found";
     return;
   }
-
-  first_party_storage_trackers_initailized_ = true;
 }
 
 bool TrackingProtectionService::Init() {

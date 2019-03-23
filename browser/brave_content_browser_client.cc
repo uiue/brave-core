@@ -24,6 +24,7 @@
 #include "brave/components/brave_rewards/browser/buildflags/buildflags.h"
 #include "brave/components/brave_shields/browser/brave_shields_util.h"
 #include "brave/components/brave_shields/browser/brave_shields_web_contents_observer.h"
+#include "brave/components/brave_shields/browser/tracking_protection_service.h"
 #include "brave/components/brave_shields/common/brave_shield_constants.h"
 #include "brave/components/brave_webtorrent/browser/content_browser_client_helper.h"
 #include "brave/components/content_settings/core/browser/brave_cookie_settings.h"
@@ -168,11 +169,18 @@ bool BraveContentBrowserClient::AllowGetCookie(const GURL& url,
     content::ResourceContext* context, int render_process_id,
     int render_frame_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  bool allow = AllowAccessCookie(url, first_party, context, render_process_id,
+  CHECK(g_brave_browser_process->tracking_protection_service()->
+    IsInitialized());
+  bool allow = g_brave_browser_process->tracking_protection_service()->
+    ShouldStoreState(ProfileIOData::FromResourceContext(context)->
+      GetHostContentSettingsMap(), render_process_id,
+      render_frame_id, url, first_party);
+  if (allow) {
+    allow = AllowAccessCookie(url, first_party, context, render_process_id,
                                  render_frame_id);
-  OnCookiesRead(render_process_id, render_frame_id, url, first_party,
+    OnCookiesRead(render_process_id, render_frame_id, url, first_party,
                 cookie_list, !allow);
-
+  }
   return allow;
 }
 
@@ -181,10 +189,18 @@ bool BraveContentBrowserClient::AllowSetCookie(const GURL& url,
     content::ResourceContext* context, int render_process_id,
     int render_frame_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  bool allow = AllowAccessCookie(url, first_party, context, render_process_id,
+  CHECK(g_brave_browser_process->tracking_protection_service()->
+    IsInitialized());
+  bool allow = g_brave_browser_process->tracking_protection_service()->
+    ShouldStoreState(ProfileIOData::FromResourceContext(context)->
+      GetHostContentSettingsMap(), render_process_id,
+      render_frame_id, url, first_party);
+  if (allow) {
+    allow = AllowAccessCookie(url, first_party, context, render_process_id,
                                  render_frame_id);
-  OnCookieChange(render_process_id, render_frame_id, url, first_party, cookie,
+    OnCookieChange(render_process_id, render_frame_id, url, first_party, cookie,
                  !allow);
+  }
   return allow;
 }
 

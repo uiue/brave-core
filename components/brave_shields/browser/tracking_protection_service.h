@@ -46,9 +46,16 @@ class TrackingProtectionService : public BaseLocalDataFilesObserver {
   bool ShouldStoreState(HostContentSettingsMap* map, 
     int render_process_id, int render_frame_id, const GURL& top_origin_url, 
     const GURL& origin_url);
-
   void DispatchBlockedEvent(int render_process_id, int render_frame_id, 
     const GURL& request_url);
+
+  void SetStartingSiteForRenderFrame(GURL starting_site, int render_process_id,
+    int render_frame_id);
+  GURL GetStartingSiteForRenderFrame(int render_process_id,
+    int render_frame_id);
+  void DeleteRenderFrameKey(int render_process_id, int render_frame_id);
+  void ModifyRenderFrameKey(int old_render_process_id, int old_render_frame_id,
+    int new_render_process_id, int new_render_frame_id);
   
  protected:
   bool Init() override;
@@ -58,10 +65,23 @@ class TrackingProtectionService : public BaseLocalDataFilesObserver {
                         const std::string& manifest) override;
 
   void ParseStorageTrackersData();
+  struct RenderFrameIdKey {
+    RenderFrameIdKey();
+    RenderFrameIdKey(int render_process_id, int frame_routing_id);
+
+    int render_process_id;
+    int frame_routing_id;
+
+    bool operator<(const RenderFrameIdKey& other) const;
+    bool operator==(const RenderFrameIdKey& other) const;
+  };
 
  private:
   void OnDATFileDataReady();
   std::vector<std::string> GetThirdPartyHosts(const std::string& base_host);
+
+  std::map<RenderFrameIdKey, GURL> render_frame_key_to_starting_site_url;
+  base::Lock frame_starting_site_map_lock_;
 
   brave_shields::DATFileDataBuffer buffer_;
   brave_shields::DATFileDataBuffer storage_trackers_buffer_;
@@ -73,7 +93,6 @@ class TrackingProtectionService : public BaseLocalDataFilesObserver {
 
   SEQUENCE_CHECKER(sequence_checker_);
   std::vector<std::string> first_party_storage_trackers_;
-  bool first_party_storage_trackers_initailized_;
 
   base::WeakPtrFactory<TrackingProtectionService> weak_factory_;
   DISALLOW_COPY_AND_ASSIGN(TrackingProtectionService);

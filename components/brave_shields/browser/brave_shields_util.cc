@@ -53,15 +53,17 @@ bool GetDefaultFromResourceIdentifier(const std::string& resource_identifier,
   return false;
 }
 
-bool IsAllowContentSetting(HostContentSettingsMap* content_settings,
+}  // namespace
+
+bool IsAllowContentSetting(HostContentSettingsMap* map,
                            const GURL& primary_url,
                            const GURL& secondary_url,
                            ContentSettingsType setting_type,
                            const std::string& resource_identifier) {
-  DCHECK(content_settings);
+  DCHECK(map);
   content_settings::SettingInfo setting_info;
   std::unique_ptr<base::Value> value =
-      content_settings->GetWebsiteSetting(
+      map->GetWebsiteSetting(
           primary_url, secondary_url, setting_type, resource_identifier,
           &setting_info);
   ContentSetting setting =
@@ -75,8 +77,6 @@ bool IsAllowContentSetting(HostContentSettingsMap* content_settings,
   }
   return setting == CONTENT_SETTING_ALLOW;
 }
-
-}  // namespace
 
 bool IsAllowContentSettingFromIO(const net::URLRequest* request,
     const GURL& primary_url, const GURL& secondary_url,

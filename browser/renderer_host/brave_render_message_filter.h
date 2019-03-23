@@ -37,7 +37,6 @@ class BraveRenderMessageFilter : public ChromeRenderMessageFilter {
   void OnAllowIndexedDB(int render_frame_id,
                         const GURL& origin_url,
                         const GURL& top_origin_url,
-                        const base::string16& name,
                         bool* allowed);
 
   HostContentSettingsMap *host_content_settings_map_;
