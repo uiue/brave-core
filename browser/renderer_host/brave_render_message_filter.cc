@@ -2,13 +2,11 @@
 
 #include "brave/browser/renderer_host/brave_render_message_filter.h"
 
-#include "base/task/post_task.h"
 #include "brave/browser/brave_browser_process_impl.h"
 #include "brave/components/brave_shields/browser/tracking_protection_service.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/render_messages.h"
-#include "content/public/browser/browser_task_traits.h"
 
 using base::string16;
 
@@ -42,7 +40,8 @@ void BraveRenderMessageFilter::OnAllowDatabase(int render_frame_id,
   *allowed = g_brave_browser_process->tracking_protection_service()->
     ShouldStoreState(host_content_settings_map_,
                      render_process_id_,
-                     render_frame_id, origin_url,
+                     render_frame_id,
+                     origin_url,
                      top_origin_url);
 
   if (*allowed) {
@@ -53,7 +52,6 @@ void BraveRenderMessageFilter::OnAllowDatabase(int render_frame_id,
                                                display_name,
                                                allowed);
   }
-  return;
 }
 
 void BraveRenderMessageFilter::OnAllowDOMStorage(int render_frame_id,
@@ -75,7 +73,6 @@ void BraveRenderMessageFilter::OnAllowDOMStorage(int render_frame_id,
                                                  local,
                                                  allowed);
   }
-  return;
 }
 
 void BraveRenderMessageFilter::OnAllowIndexedDB(int render_frame_id,
@@ -95,5 +92,4 @@ void BraveRenderMessageFilter::OnAllowIndexedDB(int render_frame_id,
                                                 top_origin_url,
                                                 allowed);
   }
-  return;
 }

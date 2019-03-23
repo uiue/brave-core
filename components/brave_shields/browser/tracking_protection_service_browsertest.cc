@@ -7,9 +7,9 @@
 #include "base/task/post_task.h"
 #include "base/test/thread_test_helper.h"
 #include "brave/browser/brave_browser_process_impl.h"
-#include "brave/browser/renderer_host/buildflags/buildflags.h"  // For STP
 #include "brave/common/brave_paths.h"
 #include "brave/common/pref_names.h"
+#include "brave/components/brave_shields/browser/buildflags/buildflags.h"  // For STP
 #include "brave/components/brave_shields/browser/local_data_files_service.h"
 #include "brave/components/brave_shields/browser/tracking_protection_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -22,6 +22,7 @@
 #include "net/dns/mock_host_resolver.h"
 
 #if BUILDFLAG(BRAVE_STP_ENABLED)
+#include "brave/common/brave_switches.h"
 #include "brave/components/brave_shields/browser/tracking_protection_helper.h"
 
 using brave_shields::TrackingProtectionHelper;
@@ -57,6 +58,13 @@ const std::string kTrackingProtectionComponentTestBase64PublicKey =
 class TrackingProtectionServiceTest : public ExtensionBrowserTest {
 public:
   TrackingProtectionServiceTest() {}
+
+#if BUILDFLAG(BRAVE_STP_ENABLED)
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+    command_line->AppendSwitch(switches::kEnableSmartTrackingProtection);
+  }
+#endif
 
   void SetUp() override {
     InitEmbeddedTestServer();
@@ -171,22 +179,19 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionServiceTest, TrackerReferencedFromUntru
 
 #if BUILDFLAG(BRAVE_STP_ENABLED)
 IN_PROC_BROWSER_TEST_F(TrackingProtectionServiceTest, StorageTrackingBlocked) {
-  if (!TrackingProtectionHelper::IsSmartTrackingProtectionEnabled()) {
-    return;
-  }
+  ASSERT_TRUE(TrackingProtectionHelper::IsSmartTrackingProtectionEnabled());
   ASSERT_TRUE(InstallTrackingProtectionExtension());
 
   // tracker.com is in the StorageTrackingProtection list
-  GURL tracking_url = embedded_test_server()->GetURL("tracker.com",
-    kStoragePage);
+  const GURL tracking_url = embedded_test_server()->GetURL("tracker.com",
+      kStoragePage);
 
-  GURL url = embedded_test_server()->GetURL(std::string(kRedirectPage) +
-    tracking_url.spec());
+  const GURL url = embedded_test_server()->GetURL(std::string(kRedirectPage) +
+      tracking_url.spec());
 
   ui_test_utils::NavigateToURL(browser(), url);
   content::WebContents* contents = browser()->tab_strip_model()->
     GetActiveWebContents();
-  ASSERT_TRUE(content::WaitForLoadStop(contents));
   EXPECT_EQ("tracker.com", contents->GetURL().host());
 
   bool storage_blocked;
@@ -200,22 +205,19 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionServiceTest, StorageTrackingBlocked) {
 }
 
 IN_PROC_BROWSER_TEST_F(TrackingProtectionServiceTest, StorageTrackingAllowed) {
-  if (!TrackingProtectionHelper::IsSmartTrackingProtectionEnabled()) {
-    return;
-  }
+  ASSERT_TRUE(TrackingProtectionHelper::IsSmartTrackingProtectionEnabled());
   ASSERT_TRUE(InstallTrackingProtectionExtension());
 
   // example.com is not in the StorageTrackingProtection list
-  GURL redirect_url = embedded_test_server()->GetURL("example.com",
-    kStoragePage);
+  const GURL redirect_url = embedded_test_server()->GetURL("example.com",
+      kStoragePage);
 
-  GURL url = embedded_test_server()->GetURL(std::string(kRedirectPage) +
-    redirect_url.spec());
+  const GURL url = embedded_test_server()->GetURL(kRedirectPage +
+      redirect_url.spec());
 
   ui_test_utils::NavigateToURL(browser(), url);
   content::WebContents* contents = browser()->tab_strip_model()->
     GetActiveWebContents();
-  ASSERT_TRUE(content::WaitForLoadStop(contents));
   EXPECT_EQ("example.com", contents->GetURL().host());
 
   bool storage_available;

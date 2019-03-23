@@ -24,17 +24,11 @@
 
 #if BUILDFLAG(BRAVE_STP_ENABLED)
 #include "base/strings/string_split.h"
-#include "base/task/post_task.h"
-#include "brave/common/brave_switches.h"
 #include "brave/components/brave_shields/browser/brave_shields_util.h"
-#include "brave/components/brave_shields/browser/brave_shields_web_contents_observer.h"
 #include "brave/components/brave_shields/browser/tracking_protection_helper.h"
 #include "brave/components/brave_shields/common/brave_shield_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_contents.h"
 #endif
 
 namespace brave_shields {
@@ -83,13 +77,7 @@ void TrackingProtectionService::SetStartingSiteForRenderFrame(
                                                          int render_frame_id) {
   base::AutoLock lock(frame_starting_site_map_lock_);
   const RenderFrameIdKey key(render_process_id, render_frame_id);
-  auto iter = render_frame_key_to_starting_site_url.find(key);
-  if (iter != render_frame_key_to_starting_site_url.end()) {
-    render_frame_key_to_starting_site_url.erase(key);
-  }
-  render_frame_key_to_starting_site_url.insert(
-    std::pair<RenderFrameIdKey, GURL>(key, starting_site));
-  return;
+  render_frame_key_to_starting_site_url[key] = starting_site;
 }
 
 GURL TrackingProtectionService::GetStartingSiteForRenderFrame(
@@ -187,26 +175,31 @@ bool TrackingProtectionService::ShouldStoreState(HostContentSettingsMap* map,
     return true;
   }
 
-  bool allow_brave_shields = starting_site == GURL() ? false :
-    IsAllowContentSetting(map, starting_site, GURL(),
-      CONTENT_SETTINGS_TYPE_PLUGINS, brave_shields::kBraveShields);
+  const bool allow_brave_shields = starting_site.is_empty() ? false :
+      IsAllowContentSetting(map,
+                            starting_site,
+                            GURL(),
+                            CONTENT_SETTINGS_TYPE_PLUGINS,
+                            brave_shields::kBraveShields);
 
   if (!allow_brave_shields) {
     return true;
   }
 
-  bool allow_trackers = starting_site == GURL() ? true : IsAllowContentSetting(
-      map, starting_site, GURL(), CONTENT_SETTINGS_TYPE_PLUGINS,
-      brave_shields::kTrackers);
+  const bool allow_trackers = starting_site.is_empty() ? true :
+      IsAllowContentSetting(map,
+                            starting_site,
+                            GURL(),
+                            CONTENT_SETTINGS_TYPE_PLUGINS,
+                            brave_shields::kTrackers);
 
   if (allow_trackers) {
     return true;
   }
 
   // deny storage if host is found in the tracker list
-  return !(std::find(first_party_storage_trackers_.begin(),
-    first_party_storage_trackers_.end(), host)
-    != first_party_storage_trackers_.end());
+  return first_party_storage_trackers_.find(host) ==
+      first_party_storage_trackers_.end();
 }
 
 void TrackingProtectionService::ParseStorageTrackersData() {
@@ -260,6 +253,9 @@ void TrackingProtectionService::OnComponentReady(
                  weak_factory_.GetWeakPtr()));
 
 #if BUILDFLAG(BRAVE_STP_ENABLED)
+  if (!TrackingProtectionHelper::IsSmartTrackingProtectionEnabled()) {
+    return;
+  }
   base::FilePath storage_tracking_protection_path =
       install_dir.AppendASCII(kDatFileVersion).AppendASCII(
         kStorageTrackersFile);

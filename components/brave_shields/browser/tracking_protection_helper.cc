@@ -5,11 +5,9 @@
 #include "brave/browser/brave_browser_process_impl.h"
 #include "brave/common/brave_switches.h"
 #include "brave/components/brave_shields/browser/tracking_protection_service.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 using content::NavigationHandle;
 using content::RenderFrameHost;
@@ -31,15 +29,14 @@ TrackingProtectionHelper::~TrackingProtectionHelper() {
 }
 
 void TrackingProtectionHelper::DidStartNavigation(NavigationHandle* handle) {
-  RenderFrameHost* rfh = web_contents()->GetMainFrame();
-
-  if (!ui::PageTransitionIsRedirect(handle->GetPageTransition())) {
+  if (handle->IsInMainFrame() &&
+      !ui::PageTransitionIsRedirect(handle->GetPageTransition())) {
+    RenderFrameHost* rfh = web_contents()->GetMainFrame();
     g_brave_browser_process->tracking_protection_service()->
       SetStartingSiteForRenderFrame(handle->GetURL(),
                                     rfh->GetProcess()->GetID(),
                                     rfh->GetRoutingID());
   }
-  return;
 }
 
 void TrackingProtectionHelper::RenderFrameDeleted(RenderFrameHost*

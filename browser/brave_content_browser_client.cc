@@ -173,13 +173,12 @@ bool BraveContentBrowserClient::AllowAccessCookie(
       brave_shields::kCookies);
   content_settings::BraveCookieSettings* cookie_settings =
       (content_settings::BraveCookieSettings*)io_data->GetCookieSettings();
-  allow = !ShouldBlockCookie(
-            allow_brave_shields,
-            allow_1p_cookies,
-            allow_3p_cookies,
-            first_party,
-            url,
-            cookie_settings->GetAllowGoogleAuth()) &&
+  allow = !ShouldBlockCookie(allow_brave_shields,
+                             allow_1p_cookies,
+                             allow_3p_cookies,
+                             first_party,
+                             url,
+                             cookie_settings->GetAllowGoogleAuth()) &&
           cookie_settings->IsCookieAccessAllowed(url, first_party, tab_origin);
   return allow;
 }
@@ -214,8 +213,7 @@ BraveContentBrowserClient::AllowWebBluetooth(
     content::BrowserContext* browser_context,
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {
-  return content::ContentBrowserClient::AllowWebBluetoothResult
-    ::BLOCK_GLOBALLY_DISABLED;
+  return ContentBrowserClient::AllowWebBluetoothResult::BLOCK_GLOBALLY_DISABLED;
 }
 
 bool BraveContentBrowserClient::HandleExternalProtocol(
