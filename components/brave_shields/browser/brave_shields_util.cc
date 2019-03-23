@@ -55,15 +55,15 @@ bool GetDefaultFromResourceIdentifier(const std::string& resource_identifier,
 
 }  // namespace
 
-bool IsAllowContentSetting(HostContentSettingsMap* map,
+bool IsAllowContentSetting(HostContentSettingsMap* content_settings,
                            const GURL& primary_url,
                            const GURL& secondary_url,
                            ContentSettingsType setting_type,
                            const std::string& resource_identifier) {
-  DCHECK(map);
+  DCHECK(content_settings);
   content_settings::SettingInfo setting_info;
   std::unique_ptr<base::Value> value =
-      map->GetWebsiteSetting(
+      content_settings->GetWebsiteSetting(
           primary_url, secondary_url, setting_type, resource_identifier,
           &setting_info);
   ContentSetting setting =

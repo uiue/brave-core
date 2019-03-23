@@ -20,11 +20,17 @@ struct Referrer;
 }
 
 class GURL;
-class Profile;
 class HostContentSettingsMap;
+class Profile;
 class ProfileIOData;
 
 namespace brave_shields {
+
+bool IsAllowContentSetting(HostContentSettingsMap* content_settings,
+                           const GURL& primary_url,
+                           const GURL& secondary_url,
+                           ContentSettingsType setting_type,
+                           const std::string& resource_identifier);
 
 bool IsAllowContentSettingWithIOData(ProfileIOData* io_data,
     const GURL& primary_url, const GURL& secondary_url,
@@ -36,11 +42,6 @@ bool IsAllowContentSettingsForProfile(Profile* profile,
                                       const GURL& secondary_url,
                                       ContentSettingsType setting_type,
                                       const std::string& resource_identifier);
-
-bool IsAllowContentSetting(HostContentSettingsMap* map,
-    const GURL& primary_url, const GURL& secondary_url,
-    ContentSettingsType setting_type,
-    const std::string& resource_identifier);
 
 bool IsAllowContentSettingFromIO(const net::URLRequest* request,
     const GURL& primary_url, const GURL& secondary_url,

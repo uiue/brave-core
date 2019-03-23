@@ -3,12 +3,15 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "build/build_config.h"  // For OS_MACOSX
+#include "brave/browser/renderer_host/buildflags/buildflags.h" // For STP
 #include "chrome/browser/search/search.h"
 #include "content/public/browser/browser_url_handler.h"
 
+#if BUILDFLAG(BRAVE_STP_ENABLED)
 #include "brave/browser/renderer_host/brave_render_message_filter.h"
 #undef ChromeRenderMessageFilter
 #define ChromeRenderMessageFilter BraveRenderMessageFilter
+#endif
 
 #if defined(OS_MACOSX)
 #include "brave/browser/brave_browser_main_parts_mac.h"

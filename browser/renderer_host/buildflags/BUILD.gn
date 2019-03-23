@@ -1,0 +1,9 @@
+import("//build/buildflag_header.gni")
+import("//brave/browser/renderer_host/buildflags/buildflags.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "BRAVE_STP_ENABLED=$brave_stp_enabled",
+  ]
+}

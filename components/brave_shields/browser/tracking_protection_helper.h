@@ -27,7 +27,8 @@ class TrackingProtectionHelper : public content::WebContentsObserver,
       navigation_handle) override;
     void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
-    void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+    void RenderFrameDeleted(content::RenderFrameHost* render_frame_host)
+      override;
 
   DISALLOW_COPY_AND_ASSIGN(TrackingProtectionHelper);
 };

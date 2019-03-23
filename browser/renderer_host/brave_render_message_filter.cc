@@ -39,8 +39,6 @@ void BraveRenderMessageFilter::OnAllowDatabase(int render_frame_id,
                const base::string16& name,
                const base::string16& display_name,
                bool* allowed) {
-  CHECK(g_brave_browser_process->tracking_protection_service()->
-    IsInitialized());
   *allowed = g_brave_browser_process->tracking_protection_service()->
     ShouldStoreState(host_content_settings_map_, render_process_id_,
       render_frame_id, origin_url, top_origin_url);
@@ -57,8 +55,6 @@ void BraveRenderMessageFilter::OnAllowDOMStorage(int render_frame_id,
                const GURL& top_origin_url,
                bool local,
                bool* allowed) {
-  CHECK(g_brave_browser_process->tracking_protection_service()->
-    IsInitialized());
   *allowed = g_brave_browser_process->tracking_protection_service()->
     ShouldStoreState(host_content_settings_map_, render_process_id_,
       render_frame_id, origin_url, top_origin_url);
@@ -74,8 +70,6 @@ void BraveRenderMessageFilter::OnAllowIndexedDB(int render_frame_id,
                const GURL& origin_url,
                const GURL& top_origin_url,
                bool* allowed) {
-  CHECK(g_brave_browser_process->tracking_protection_service()->
-    IsInitialized());
   *allowed = g_brave_browser_process->tracking_protection_service()->
     ShouldStoreState(host_content_settings_map_, render_process_id_,
       render_frame_id, origin_url, top_origin_url);
