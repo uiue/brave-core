@@ -33,7 +33,10 @@
 
 namespace brave_shields {
 
+#if BUILDFLAG(BRAVE_STP_ENABLED)
 const char kStorageTrackersFile[] = "StorageTrackingProtection.dat";
+#endif
+
 const char kNavigationTrackersFile[] = "TrackingProtection.dat";
 const char kDatFileVersion[] = "1";
 const int kThirdPartyHostsCacheSize = 20;
