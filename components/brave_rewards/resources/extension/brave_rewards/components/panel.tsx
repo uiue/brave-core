@@ -38,7 +38,7 @@ export class Panel extends React.Component<Props, State> {
       publisherKey: null,
       newMonthlyAmount: null
     }
-    this.defaultDonationAmounts = [0, 1, 5, 10]
+    this.defaultDonationAmounts = [1, 5, 10]
   }
 
   get actions () {
@@ -358,10 +358,14 @@ export class Panel extends React.Component<Props, State> {
     const { rates } = this.props.rewardsPanelData.walletProperties
 
     const publisherKey = publisher && publisher.publisher_key
+    const initialAmounts = (
+      !publisherKey ||
+      !donationAmounts ||
+      !donationAmounts[publisherKey] ||
+      donationAmounts[publisherKey].length === 0
+    ) ? this.defaultDonationAmounts : donationAmounts[publisherKey]
 
-    const amounts = (!publisherKey || !donationAmounts || !donationAmounts[publisherKey])
-      ? this.defaultDonationAmounts
-      : donationAmounts[publisherKey]
+    const amounts = [0, ...initialAmounts]
 
     return amounts.map((value: number) => {
       return {

@@ -335,6 +335,9 @@ export const rewardsPanelReducer = (state: RewardsExtension.State | undefined, a
       }
 
       state = { ...state }
+      if (!state.donationAmounts) {
+        state.donationAmounts = {}
+      }
       state.donationAmounts[payload.banner.publisherKey] = payload.banner.amounts
       break
     }
