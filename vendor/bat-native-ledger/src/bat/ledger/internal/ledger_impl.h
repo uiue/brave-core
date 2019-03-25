@@ -480,6 +480,16 @@ class LedgerImpl : public ledger::Ledger,
 
   void OnRemovedRecurring(ledger::Result result);
 
+  void ModifyPublisherVerified(
+    ledger::Result result,
+    std::unique_ptr<ledger::PublisherInfo> publisher,
+    ledger::PublisherInfoCallback callback);
+
+  void ModifyPublishersVerified(
+    const ledger::PublisherInfoList&,
+    uint32_t record,
+    ledger::PublisherInfoListCallback callback);
+
   // ledger::LedgerCallbacHandler implementation
   void OnPublisherStateLoaded(ledger::Result result,
                               const std::string& data) override;
