@@ -524,6 +524,8 @@ void CustomizeWebUIHTMLSource(const std::string &name,
         { "errorMissingCodeTitle", IDS_BRAVE_SYNC_ERROR_MISSING_SYNC_CODE_TITLE },               // NOLINT
         { "errorSyncInitFailedTitle", IDS_BRAVE_SYNC_ERROR_INIT_FAILED_TITLE },
         { "errorSyncInitFailedDescription", IDS_BRAVE_SYNC_ERROR_INIT_FAILED_DESCRIPTION },      // NOLINT
+        { "errorSyncRequiresCorrectTimeTitle", IDS_BRAVE_SYNC_REQUIRES_CORRECT_TIME_TITLE },     // NOLINT
+        { "errorSyncRequiresCorrectTimeDescription", IDS_BRAVE_SYNC_REQUIRES_CORRECT_TIME_DESCRIPTION }, // NOLINT
       }
     }, {
       std::string("adblock"), {
@@ -587,4 +589,4 @@ void CustomizeWebUIHTMLSource(const std::string &name,
     }
   };
   AddLocalizedStringsBulk(source, localized_strings[name]);
-}
+}   // NOLINT (suppress `Small and focused functions are preferred: CustomizeWebUIHTMLSource() has 510 non-comment lines (error triggered by exceeding 500 lines)`)
