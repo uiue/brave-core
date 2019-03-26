@@ -32,8 +32,7 @@ BraveComponentLoader::BraveComponentLoader(
     Profile* profile)
     : ComponentLoader(extension_service, profile_prefs, local_state, profile),
       profile_(profile),
-      profile_prefs_(profile_prefs),
-      testing_callbacks_(nullptr) {
+      profile_prefs_(profile_prefs) {
 }
 
 BraveComponentLoader::~BraveComponentLoader() {

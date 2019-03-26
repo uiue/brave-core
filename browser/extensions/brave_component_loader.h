@@ -42,7 +42,6 @@ class BraveComponentLoader : public ComponentLoader {
   Profile* profile_;
   PrefService* profile_prefs_;
   PrefChangeRegistrar registrar_;
-  TestingCallbacks* testing_callbacks_;
   DISALLOW_COPY_AND_ASSIGN(BraveComponentLoader);
 };
 
