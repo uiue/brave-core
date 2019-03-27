@@ -5,7 +5,7 @@
 
 #include "ui/shell_dialogs/execute_select_file_win.h"
 
-#include <shlobjidl.h>
+#include <shlobj.h>
 
 // Disable FOS_FORCEFILESYSTEM, and replace it by
 // FOS_SUPPORTSTREAMABLEITEMS.
