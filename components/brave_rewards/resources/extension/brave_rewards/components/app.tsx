@@ -68,18 +68,15 @@ export class RewardsPanel extends React.Component<Props, State> {
         // Check every second no more than 'limit' times
         // clear the interval if panel closes
 
-        const markupMatch = '<figure class=\"tw-avatar tw-avatar--size-36\">' +
-                            '<div class=\"tw-border-radius-medium tw-overflow-hidden\">' +
-                            '<img class=\"tw-avatar__img tw-image\" alt=\"'
-        const notYetRetrievedMatch = 'https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png'
+        const markupMatch = 'channel-header__channel-link'
         let itr = 0
-        const limit = 10
+        const limit = 5
         let interval = setInterval(poll, 1000)
         function poll () {
           chrome.tabs.executeScript(tabId, {
             code: 'document.body.outerHTML'
           }, function (result: string[]) {
-            if (result[0].includes(markupMatch) && !result[0].includes(notYetRetrievedMatch)) {
+            if (result[0].includes(markupMatch)) {
               clearInterval(interval)
               const rewardsPanelActions = require('../background/actions/rewardsPanelActions').default
               rewardsPanelActions.onTabRetrieved(tab, result[0])
